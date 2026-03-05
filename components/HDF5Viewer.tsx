@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Box, Card, Flex, Text, Heading, Code, ScrollArea } from '@radix-ui/themes';
 import { FileInfo, Attribute, Variable } from '@/lib/parsers';
+import DataVisualizer from './DataVisualizer';
 
 function AttributeList({ attributes }: { attributes: Attribute[] }) {
   if (attributes.length === 0) return <Text color="gray">无属性</Text>;
@@ -68,7 +69,10 @@ export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
       </Card>
 
       <Box>
-        <Heading size="3" mb="3">数据集 ({fileInfo.variables.length})</Heading>
+        <Flex justify="between" align="center" mb="3">
+          <Heading size="3">数据集 ({fileInfo.variables.length})</Heading>
+          <DataVisualizer variables={fileInfo.variables} />
+        </Flex>
         <Flex direction="column" gap="2">
           {fileInfo.variables.map((v, i) => (
             <DatasetCard key={i} variable={v} />

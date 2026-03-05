@@ -114,7 +114,7 @@ export async function parseHDF5(buffer: ArrayBuffer): Promise<FileInfo> {
           dimensions: dimNames,
           shape,
           attributes: attrs,
-          data: item.value
+          data: Array.isArray(item.value) ? item.value : Array.from(item.value || [])
         });
       } else if (item.type === 'Group') {
         visitKeys(fullPath);

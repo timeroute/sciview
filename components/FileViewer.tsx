@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Card, Flex, Text, Heading, Section, Code, ScrollArea } from '@radix-ui/themes';
+import { Box, Card, Flex, Text, Heading, Section, Code } from '@radix-ui/themes';
 import { FileInfo, Attribute, Variable } from '@/lib/parsers';
+import DataVisualizer from './DataVisualizer';
 
 function AttributeList({ attributes }: { attributes: Attribute[] }) {
   if (attributes.length === 0) return <Text color="gray">无属性</Text>;
@@ -47,11 +48,11 @@ function VariableCard({ variable }: { variable: Variable }) {
             {variable.data && (
               <Box>
                 <Text size="2" color="gray" mb="1">数据预览:</Text>
-                <ScrollArea style={{ maxHeight: 160 }}>
+                <Box style={{ maxHeight: 160, overflowY: 'auto' }}>
                   <Code size="1" style={{ display: 'block', whiteSpace: 'pre' }}>
                     {JSON.stringify(variable.data, null, 2)}
                   </Code>
-                </ScrollArea>
+                </Box>
               </Box>
             )}
           </Flex>
@@ -63,47 +64,46 @@ function VariableCard({ variable }: { variable: Variable }) {
 
 export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
   return (
-    <Flex gap="4" style={{ height: 'calc(100vh - 12rem)' }}>
+    <Flex gap="4">
       <Box style={{ width: '33%' }}>
-        <ScrollArea>
-          <Flex direction="column" gap="4" pr="2">
+        <Flex direction="column" gap="4" pr="2">
+          <Card>
+            <Heading size="4">格式: {fileInfo.format.toUpperCase()}</Heading>
+          </Card>
+
+          <Section size="1">
+            <Heading size="3" mb="2">全局属性</Heading>
             <Card>
-              <Heading size="4">格式: {fileInfo.format.toUpperCase()}</Heading>
+              <AttributeList attributes={fileInfo.globalAttributes} />
             </Card>
+          </Section>
 
-            <Section size="1">
-              <Heading size="3" mb="2">全局属性</Heading>
-              <Card>
-                <AttributeList attributes={fileInfo.globalAttributes} />
-              </Card>
-            </Section>
-
-            <Section size="1">
-              <Heading size="3" mb="2">维度 ({fileInfo.dimensions.length})</Heading>
-              <Card>
-                <Flex direction="column" gap="1">
-                  {fileInfo.dimensions.map((dim, i) => (
-                    <Flex key={i} gap="2">
-                      <Code color="purple">{dim.name}:</Code>
-                      <Text size="2">{dim.size}</Text>
-                    </Flex>
-                  ))}
-                </Flex>
-              </Card>
-            </Section>
-          </Flex>
-        </ScrollArea>
+          <Section size="1">
+            <Heading size="3" mb="2">维度 ({fileInfo.dimensions.length})</Heading>
+            <Card>
+              <Flex direction="column" gap="1">
+                {fileInfo.dimensions.map((dim, i) => (
+                  <Flex key={i} gap="2">
+                    <Code color="purple">{dim.name}:</Code>
+                    <Text size="2">{dim.size}</Text>
+                  </Flex>
+                ))}
+              </Flex>
+            </Card>
+          </Section>
+        </Flex>
       </Box>
 
       <Box style={{ flex: 1 }}>
-        <ScrollArea>
-          <Heading size="3" mb="3">变量 ({fileInfo.variables.length})</Heading>
-          <Flex direction="column" gap="2">
-            {fileInfo.variables.map((v, i) => (
-              <VariableCard key={i} variable={v} />
-            ))}
-          </Flex>
-        </ScrollArea>
+        <Flex justify="between" align="center" mb="3">
+          <Heading size="3">变量 ({fileInfo.variables.length})</Heading>
+          <DataVisualizer variables={fileInfo.variables} />
+        </Flex>
+        <Flex direction="column" gap="2">
+          {fileInfo.variables.map((v, i) => (
+            <VariableCard key={i} variable={v} />
+          ))}
+        </Flex>
       </Box>
     </Flex>
   );
