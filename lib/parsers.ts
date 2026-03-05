@@ -50,13 +50,13 @@ export async function parseNetCDF(buffer: ArrayBuffer): Promise<FileInfo> {
     variables: nc.variables.map(v => ({
       name: v.name,
       type: v.type,
-      dimensions: v.dimensions || [],
-      shape: v.dimensions?.map(dimName => nc.dimensions.find(d => d.name === dimName)?.size || 0) || [],
-      attributes: v.attributes?.map(attr => ({
+      dimensions: (v.dimensions || []).map((dimIndex: number) => nc.dimensions[dimIndex]?.name || ''),
+      shape: (v.dimensions || []).map((dimIndex: number) => nc.dimensions[dimIndex]?.size || 0),
+      attributes: (v.attributes || []).map((attr: any) => ({
         name: attr.name,
         type: attr.type,
         value: attr.value
-      })) || [],
+      })),
       data: nc.getDataVariable(v.name)
     }))
   };

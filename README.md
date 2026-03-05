@@ -5,11 +5,11 @@
 ## 功能特性
 
 - ✅ 支持 NetCDF (.nc, .netcdf) 文件解析
+- ✅ 支持 HDF5 (.h5, .hdf5) 文件解析
 - ✅ 显示全局属性 (Global Attributes)
 - ✅ 显示维度信息 (Dimensions)
 - ✅ 显示变量及其属性 (Variables & Attributes)
 - ✅ 显示数据类型和形状信息
-- 🚧 HDF5 支持（待实现）
 - 🚧 数据可视化/绘图功能（未来版本）
 
 ## 快速开始
@@ -61,7 +61,6 @@ ncview/
 
 ## 未来计划
 
-- [ ] 添加 HDF5 支持（使用 h5wasm）
 - [ ] 数据可视化功能
 - [ ] 支持绘制 1D/2D 数据图表
 - [ ] 数据导出功能
@@ -70,13 +69,11 @@ ncview/
 
 ## HDF5 支持
 
-要添加 HDF5 支持，需要安装 h5wasm：
+HDF5 支持已集成，使用 h5wasm 库。安装依赖：
 
 ```bash
 bun add h5wasm
 ```
-
-然后在 `lib/parsers.ts` 中实现 `parseHDF5` 函数。
 
 ## License
 
