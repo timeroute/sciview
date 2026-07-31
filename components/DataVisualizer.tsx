@@ -2,8 +2,16 @@
 
 import { Variable } from '@/lib/parsers';
 import ReactECharts from 'echarts-for-react';
-import { Box, Flex, Text, Button, Select, Dialog, Badge } from '@radix-ui/themes';
+import { Box, Flex, Text, Button, Select, Dialog, Badge, Callout } from '@radix-ui/themes';
 import { useState } from 'react';
+import {
+  downsample1D,
+  downsample2D,
+  safeMinMax,
+  PLOT_1D_THRESHOLD,
+  PLOT_2D_MAX,
+  DownsampleStrategy,
+} from '@/lib/downsample';
 
 interface DataVisualizerProps {
   variables: Variable[];
@@ -14,6 +22,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
   const [chartType, setChartType] = useState<'line' | 'bar' | 'heatmap'>('line');
   const [xVar, setXVar] = useState<string>('');
   const [yVar, setYVar] = useState<string>('');
+  const [strategy, setStrategy] = useState<DownsampleStrategy>('lttb');
 
   const getVarDimension = (v: Variable): number => {
     if (!Array.isArray(v.data) || v.data.length === 0) return 0;
@@ -31,6 +40,11 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
     return (xDim === 1 && yDim === 1) || (xDim === 0 && yDim === 2);
   };
 
+  // 最近一次绘图的采样状态（用于 UI 提示条显示）
+  let sampleInfoText: string | null = null;
+  let sampleLevel: "info" | "warn" = "info";
+  void sampleLevel;
+
   const getChartOption = () => {
     const xVariable = variables.find(v => v.name === xVar);
     const yVariable = variables.find(v => v.name === yVar);
@@ -46,13 +60,21 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
 
     if (!xVariable && yVariable && getVarDimension(yVariable) === 2) {
       const data2D = yVariable.data as number[][];
-      const heatmapData: [number, number, number][] = [];
+      // ====== 2D 热力图：分桶降采样到 400×400 以内，避免 145 万 cell 卡死 ======
+      const d2 = downsample2D(
+        data2D,
+        PLOT_2D_MAX.rows,
+        PLOT_2D_MAX.cols,
+        "avg"
+      );
+      const heatmapData = d2.data;
 
-      data2D.forEach((row, i) => {
-        row.forEach((val, j) => {
-          heatmapData.push([j, i, val]);
-        });
-      });
+      if (d2.sampled) {
+        sampleInfoText = `原始 ${d2.originalCells.toLocaleString()} 个单元 → 已降采样到 ${d2.sampledCells.toLocaleString()} 个显示（${d2.rows}×${d2.cols}）`;
+        sampleLevel = "info";
+      } else {
+        sampleInfoText = null;
+      }
 
       return {
         backgroundColor: 'transparent',
@@ -85,17 +107,18 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
         },
         xAxis: {
           type: 'category',
-          data: Array.from({ length: data2D[0]?.length || 0 }, (_, i) => i),
+          data: Array.from({ length: d2.cols }, (_, i) => i),
           ...axisStyle,
         },
         yAxis: {
           type: 'category',
-          data: Array.from({ length: data2D.length }, (_, i) => i),
+          data: Array.from({ length: d2.rows }, (_, i) => i),
           ...axisStyle,
         },
         visualMap: {
-          min: Math.min(...heatmapData.map(d => d[2])),
-          max: Math.max(...heatmapData.map(d => d[2])),
+          // 使用迭代法求极值，避免 Math.min(...1e6) 爆栈
+          min: d2.min,
+          max: d2.max,
           calculable: true,
           orient: 'horizontal',
           left: 'center',
@@ -109,14 +132,20 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
           name: yVar,
           type: 'heatmap',
           data: heatmapData,
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 20,
-              shadowColor: 'rgba(34, 211, 238, 0.4)',
-              borderColor: '#22d3ee',
-              borderWidth: 1,
-            }
-          }
+          progressive: 5000,
+          progressiveThreshold: 8000,
+          large: true,
+          largeThreshold: 2000,
+          emphasis: d2.sampled
+            ? undefined  // 大数据量关闭 hover 高亮，避免卡
+            : {
+                itemStyle: {
+                  shadowBlur: 20,
+                  shadowColor: 'rgba(34, 211, 238, 0.4)',
+                  borderColor: '#22d3ee',
+                  borderWidth: 1,
+                }
+              }
         }]
       };
     }
@@ -126,7 +155,26 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
     const xData = xVariable.data as number[];
     const yData = yVariable.data as number[];
     const length = Math.min(xData.length, yData.length);
-    const data = Array.from({ length }, (_, i) => [xData[i], yData[i]]);
+
+    // ====== 1D 折线/柱状图：超阈值自动降采样 ======
+    const threshold =
+      chartType === "line" ? PLOT_1D_THRESHOLD.line :
+      chartType === "bar" ? PLOT_1D_THRESHOLD.bar :
+      PLOT_1D_THRESHOLD.scatter;
+    const pickedStrategy = chartType === "line" ? strategy : "uniform";
+    const d1 = downsample1D(xData, yData, threshold, pickedStrategy);
+    const data = d1.data;
+    const sampledLength = d1.sampledLength;
+
+    if (d1.sampled) {
+      const strategyLabel =
+        pickedStrategy === "lttb" ? "LTTB（三角保真）" :
+        pickedStrategy === "minmax" ? "Min-Max（保留极值）" : "均匀采样";
+      sampleInfoText = `原始 ${d1.originalLength.toLocaleString()} 点 → 已用 ${strategyLabel} 降采样到 ${d1.sampledLength.toLocaleString()} 点显示（极值保留）`;
+      sampleLevel = length >= 500_000 ? "warn" : "info";
+    } else {
+      sampleInfoText = null;
+    }
 
     return {
       backgroundColor: 'transparent',
@@ -158,6 +206,14 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
         top: 56,
         bottom: 56,
       },
+      dataZoom: d1.sampled
+        ? [
+            { type: "inside", throttle: 50 },
+            { type: "slider", height: 22, bottom: 12, borderColor: "transparent", textStyle: { color: "#94a3b8" } },
+          ]
+        : length > 2000
+        ? [{ type: "inside", throttle: 80 }]
+        : undefined,
       xAxis: {
         type: 'value',
         name: xVar,
@@ -172,13 +228,19 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
         type: chartType,
         data,
         name: yVar,
-        smooth: chartType === 'line',
+        // 大数据量下：强制关闭 smooth 贝塞尔、关闭 symbol、开启 large 模式，避免百万级渲染卡死
+        smooth: chartType === 'line' && !d1.sampled && length <= 2000,
         symbol: 'circle',
-        symbolSize: chartType === 'line' ? 6 : 0,
-        showSymbol: chartType === 'line' && length <= 100,
+        symbolSize: chartType === 'line' ? (d1.sampled ? 2 : 6) : 0,
+        showSymbol: chartType === 'line' && sampledLength <= 120,
+        sampling: d1.sampled ? "lttb" : chartType === "line" ? "lttb" : undefined,
+        large: d1.sampled,
+        largeThreshold: 2000,
+        progressive: 2000,
+        progressiveThreshold: 5000,
         ...(chartType === 'line' ? {
           lineStyle: {
-            width: 2.5,
+            width: d1.sampled ? 1.5 : 2.5,
             color: {
               type: 'linear',
               x: 0, y: 0, x2: 1, y2: 0,
@@ -188,25 +250,27 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                 { offset: 1, color: '#c084fc' },
               ]
             },
-            shadowColor: 'rgba(34, 211, 238, 0.3)',
-            shadowBlur: 10,
+            shadowColor: d1.sampled ? 'transparent' : 'rgba(34, 211, 238, 0.3)',
+            shadowBlur: d1.sampled ? 0 : 10,
           },
           itemStyle: {
             color: '#22d3ee',
             borderColor: '#ffffff',
-            borderWidth: 1.5,
+            borderWidth: d1.sampled ? 0 : 1.5,
           },
-          areaStyle: {
-            opacity: 0.15,
-            color: {
-              type: 'linear',
-              x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(34, 211, 238, 0.4)' },
-                { offset: 1, color: 'rgba(34, 211, 238, 0)' },
-              ]
-            }
-          }
+          areaStyle: d1.sampled
+            ? undefined  // 大数据量关闭渐变填充（太吃 GPU）
+            : {
+                opacity: 0.15,
+                color: {
+                  type: 'linear',
+                  x: 0, y: 0, x2: 0, y2: 1,
+                  colorStops: [
+                    { offset: 0, color: 'rgba(34, 211, 238, 0.4)' },
+                    { offset: 1, color: 'rgba(34, 211, 238, 0)' },
+                  ]
+                }
+              }
         } : {
           itemStyle: {
             color: {
@@ -227,6 +291,9 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
   };
 
   const is2DMode = !xVar && yVar && getVarDimension(variables.find(v => v.name === yVar)!) === 2;
+  const hasPlot = canPlot();
+  // 先调用一次以刷新 sampleInfoText（否则首次渲染不会显示信息条）
+  if (hasPlot) getChartOption();
 
   return (
     <>
@@ -442,8 +509,44 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                 </Flex>
               )}
 
+              {!is2DMode && chartType === "line" && (
+                <Flex gap="4" align="center" direction="row" wrap="wrap">
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>采样策略:</Text>
+                  <Box style={{ flex: 1, minWidth: 200 }}>
+                    <Select.Root value={strategy} onValueChange={(v) => setStrategy(v as DownsampleStrategy)}>
+                      <Select.Trigger />
+                      <Select.Content>
+                        <Select.Item value="lttb">🔻 LTTB 三角保真（默认，折线视觉最佳）</Select.Item>
+                        <Select.Item value="minmax">📊 Min-Max（保留每桶最大/最小值）</Select.Item>
+                        <Select.Item value="uniform">⚖️ 均匀采样（最简单）</Select.Item>
+                      </Select.Content>
+                    </Select.Root>
+                  </Box>
+                </Flex>
+              )}
+
+              {/* 数据降采样提示 Callout */}
+              {hasPlot && sampleInfoText && (
+                <Callout.Root
+                  color={(sampleLevel as string) === "warn" ? "orange" : "cyan"}
+                  size="2"
+                  variant="soft"
+                >                  <Callout.Icon>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                  </Callout.Icon>
+                  <Callout.Text style={{ fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.6 }}>
+                    {sampleInfoText}
+                    {(sampleLevel as string) === "warn" && " — 数据量较大，建议按需缩放或选择变量切片。"}
+                  </Callout.Text>
+                </Callout.Root>
+              )}
+
               {/* 图表区域 */}
-              {canPlot() ? (
+              {hasPlot ? (
                 <Box
                   style={{
                     marginTop: '16px',
@@ -458,6 +561,8 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                     style={{ height: 420, width: '100%' }}
                     theme="dark"
                     notMerge={true}
+                    lazyUpdate={true}
+                    opts={{ renderer: "canvas" }}
                   />
                 </Box>
               ) : yVar ? (

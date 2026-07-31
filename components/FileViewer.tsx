@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Box, Card, Flex, Text, Heading, Code, Badge } from '@radix-ui/themes';
 import { FileInfo, Attribute, Variable } from '@/lib/parsers';
 import DataVisualizer from './DataVisualizer';
+import { truncateForPreview } from '@/lib/downsample';
 
 function SectionHeader({ icon, title, count, accent = 'cyan' }: { icon: React.ReactNode; title: string; count?: number; accent?: 'cyan' | 'violet' | 'emerald' }) {
   const accentColors = {
@@ -138,6 +139,17 @@ function AttributeList({ attributes }: { attributes: Attribute[] }) {
 function VariableCard({ variable, index }: { variable: Variable; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const dimCount = variable.shape.filter(s => s > 0).length || 1;
+  // 计算 shape 乘积（总元素数），超大数组就只展示截断预览
+  const totalElems = variable.shape.length > 0 && variable.shape.every(s => s > 0)
+    ? variable.shape.reduce((a, b) => a * b, 1)
+    : Array.isArray(variable.data) && Array.isArray(variable.data[0])
+    ? (variable.data as unknown[][]).length * ((variable.data as unknown[][])[0]?.length ?? 0)
+    : Array.isArray(variable.data) ? (variable.data as unknown[]).length : 0;
+
+  // 展开状态下根据大小决定是否截断
+  const preview = expanded && variable.data
+    ? truncateForPreview(variable.data)
+    : null;
 
   return (
     <Box
@@ -381,18 +393,46 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                       数据预览 / Data Preview
                     </Text>
                   </Flex>
-                  <Badge
-                    size="1"
-                    style={{
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      border: '1px solid rgba(16, 185, 129, 0.2)',
-                      color: 'var(--accent-emerald)',
-                      fontFamily: 'var(--font-mono)',
-                      borderRadius: '6px',
-                    }}
-                  >
-                    JSON
-                  </Badge>
+                  <Flex gap="2" align="center" wrap="wrap">
+                    <Badge
+                      size="1"
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        color: 'var(--accent-emerald)',
+                        fontFamily: 'var(--font-mono)',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      JSON
+                    </Badge>
+                    <Badge
+                      size="1"
+                      style={{
+                        background: 'rgba(14, 165, 233, 0.1)',
+                        border: '1px solid rgba(14, 165, 233, 0.2)',
+                        color: '#38bdf8',
+                        fontFamily: 'var(--font-mono)',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      {totalElems.toLocaleString()} items
+                    </Badge>
+                    {preview?.truncated && (
+                      <Badge
+                        size="1"
+                        style={{
+                          background: 'rgba(245, 158, 11, 0.1)',
+                          border: '1px solid rgba(245, 158, 11, 0.25)',
+                          color: '#f59e0b',
+                          fontFamily: 'var(--font-mono)',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        已截断（仅展示前 {preview.shownCount.toLocaleString()}）
+                      </Badge>
+                    )}
+                  </Flex>
                 </Flex>
                 <Box
                   style={{
@@ -420,7 +460,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                         wordBreak: 'break-all',
                       }}
                     >
-                      {JSON.stringify(variable.data, null, 2)}
+                      {preview ? preview.text : ''}
                     </pre>
                   </Box>
                 </Box>
