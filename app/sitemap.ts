@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://ncview.vercel.app";
+const SITE_URL = "https://sci.spaceroute.cn";
 const TODAY = new Date().toISOString().split("T")[0];
 
 export default function sitemap(): MetadataRoute.Sitemap {

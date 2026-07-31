@@ -4,14 +4,14 @@ const netcdfJsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "@id": "https://ncview.vercel.app/netcdf#softwareapplication",
+      "@id": "https://sci.spaceroute.cn/netcdf#softwareapplication",
       "name": "NetCDF Viewer by NCView",
       "alternateName": "NetCDF 在线查看器",
       "applicationCategory": "DeveloperApplication",
       "applicationSubCategory": "科学数据可视化工具",
       "operatingSystem": "任何（Web 浏览器）",
       "browserRequirements": "支持 WebAssembly 的现代浏览器",
-      "softwareHelp": "https://ncview.vercel.app/netcdf",
+      "softwareHelp": "https://sci.spaceroute.cn/netcdf",
       "softwareVersion": "1.0.0",
       "releaseNotes":
         "支持 NetCDF Classic、NetCDF-64bit offset、NetCDF4/HDF5 格式解析；提供变量、维度、属性、全局元数据浏览与多维图表可视化。",
@@ -45,29 +45,29 @@ const netcdfJsonLd = {
         "application/x-hdf5",
       ],
       "isAccessibleForFree": true,
-      "url": "https://ncview.vercel.app/netcdf",
-      "downloadUrl": "https://ncview.vercel.app/netcdf",
-      "installUrl": "https://ncview.vercel.app/netcdf",
+      "url": "https://sci.spaceroute.cn/netcdf",
+      "downloadUrl": "https://sci.spaceroute.cn/netcdf",
+      "installUrl": "https://sci.spaceroute.cn/netcdf",
       "publisher": {
         "@type": "Organization",
-        "@id": "https://ncview.vercel.app/#organization",
+        "@id": "https://sci.spaceroute.cn/#organization",
       },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://ncview.vercel.app/netcdf#breadcrumb",
+      "@id": "https://sci.spaceroute.cn/netcdf#breadcrumb",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
           "name": "首页",
-          "item": "https://ncview.vercel.app/",
+          "item": "https://sci.spaceroute.cn/",
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "NetCDF 在线查看器",
-          "item": "https://ncview.vercel.app/netcdf",
+          "item": "https://sci.spaceroute.cn/netcdf",
         },
       ],
     },

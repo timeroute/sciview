@@ -4,14 +4,14 @@ const hdf5JsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "@id": "https://ncview.vercel.app/hdf5#softwareapplication",
+      "@id": "https://sci.spaceroute.cn/hdf5#softwareapplication",
       "name": "HDF5 Viewer by NCView",
       "alternateName": "HDF5 在线查看器",
       "applicationCategory": "DeveloperApplication",
       "applicationSubCategory": "科学数据可视化工具",
       "operatingSystem": "任何（Web 浏览器）",
       "browserRequirements": "支持 WebAssembly 的现代浏览器",
-      "softwareHelp": "https://ncview.vercel.app/hdf5",
+      "softwareHelp": "https://sci.spaceroute.cn/hdf5",
       "softwareVersion": "1.0.0",
       "releaseNotes":
         "基于 h5wasm 实现浏览器端 HDF5 解析，支持 .h5/.hdf5/.hdf/.he5 等多格式；提供组/数据集/属性树浏览与多维可视化。",
@@ -45,29 +45,29 @@ const hdf5JsonLd = {
         "application/x-he5",
       ],
       "isAccessibleForFree": true,
-      "url": "https://ncview.vercel.app/hdf5",
-      "downloadUrl": "https://ncview.vercel.app/hdf5",
-      "installUrl": "https://ncview.vercel.app/hdf5",
+      "url": "https://sci.spaceroute.cn/hdf5",
+      "downloadUrl": "https://sci.spaceroute.cn/hdf5",
+      "installUrl": "https://sci.spaceroute.cn/hdf5",
       "publisher": {
         "@type": "Organization",
-        "@id": "https://ncview.vercel.app/#organization",
+        "@id": "https://sci.spaceroute.cn/#organization",
       },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://ncview.vercel.app/hdf5#breadcrumb",
+      "@id": "https://sci.spaceroute.cn/hdf5#breadcrumb",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
           "name": "首页",
-          "item": "https://ncview.vercel.app/",
+          "item": "https://sci.spaceroute.cn/",
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "HDF5 在线查看器",
-          "item": "https://ncview.vercel.app/hdf5",
+          "item": "https://sci.spaceroute.cn/hdf5",
         },
       ],
     },

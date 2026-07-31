@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
-const SITE_URL = "https://ncview.vercel.app";
+const SITE_URL = "https://sci.spaceroute.cn";
 const SITE_NAME = "NCView";
 const SITE_DESC =
   "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。";
@@ -173,8 +173,8 @@ const siteJsonLd = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://ncview.vercel.app/#website",
-      "url": "https://ncview.vercel.app",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
       "name": "NCView",
       "alternateName": "NCView - 科学数据可视化查看器",
       "description":
@@ -185,7 +185,7 @@ const siteJsonLd = {
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://ncview.vercel.app/?q={search_term_string}",
+            "urlTemplate": `${SITE_URL}/?q={search_term_string}`,
           },
           "query-input": "required name=search_term_string",
         },
@@ -193,12 +193,12 @@ const siteJsonLd = {
     },
     {
       "@type": "Organization",
-      "@id": "https://ncview.vercel.app/#organization",
+      "@id": `${SITE_URL}/#organization`,
       "name": "NCView Team",
-      "url": "https://ncview.vercel.app",
+      "url": SITE_URL,
       "logo": {
         "@type": "ImageObject",
-        "url": "https://ncview.vercel.app/favicon.ico",
+        "url": `${SITE_URL}/favicon.ico`,
         "width": 64,
         "height": 64,
       },
