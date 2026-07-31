@@ -2,7 +2,9 @@
 @import "tailwindcss";
 @import "@radix-ui/themes/styles.css";
 
-:root {
+/* ====== 深色主题（默认） ====== */
+:root,
+.dark {
   --font-display: 'Sora', 'Space Grotesk', sans-serif;
   --font-body: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -41,6 +43,42 @@
   --gradient-text: linear-gradient(135deg, #22d3ee 0%, #818cf8 50%, #c084fc 100%);
 }
 
+/* ====== 浅色主题 ====== */
+.light {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.7);
+
+  --accent-primary: #0891b2;
+  --accent-secondary: #6366f1;
+  --accent-tertiary: #9333ea;
+  --accent-cyan: #0e7490;
+  --accent-violet: #7c3aed;
+  --accent-emerald: #059669;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-muted: #94a3b8;
+
+  --border-subtle: rgba(100, 116, 139, 0.12);
+  --border-medium: rgba(100, 116, 139, 0.2);
+  --border-strong: rgba(8, 145, 178, 0.35);
+
+  --shadow-glow-cyan: 0 0 40px rgba(8, 145, 178, 0.12);
+  --shadow-glow-violet: 0 0 40px rgba(124, 58, 237, 0.12);
+  --shadow-card: 0 8px 32px rgba(15, 23, 42, 0.08);
+  --shadow-hover: 0 16px 48px rgba(15, 23, 42, 0.12);
+
+  --gradient-primary: linear-gradient(135deg, #0891b2 0%, #6366f1 50%, #9333ea 100%);
+  --gradient-card: linear-gradient(145deg, rgba(8, 145, 178, 0.08) 0%, rgba(124, 58, 237, 0.06) 100%);
+  --gradient-cyan: linear-gradient(135deg, rgba(8, 145, 178, 0.08) 0%, rgba(14, 116, 144, 0.04) 100%);
+  --gradient-violet: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%);
+  --gradient-text: linear-gradient(135deg, #0891b2 0%, #6366f1 50%, #9333ea 100%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -59,10 +97,11 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 背景装饰层 */
-body::before {
+/* ====== 深色背景装饰层 ====== */
+.dark body::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -74,7 +113,7 @@ body::before {
     var(--bg-primary);
 }
 
-body::after {
+.dark body::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -88,30 +127,74 @@ body::after {
   -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
 }
 
-/* 自定义滚动条 */
-::-webkit-scrollbar {
+/* ====== 浅色背景装饰层 ====== */
+.light body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(8, 145, 178, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 0% 100%, rgba(147, 51, 234, 0.05) 0%, transparent 50%),
+    var(--bg-primary);
+}
+
+.light body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(rgba(100, 116, 139, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 116, 139, 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* 自定义滚动条 - 深色 */
+.dark ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
-
-::-webkit-scrollbar-track {
+.dark ::-webkit-scrollbar-track {
   background: var(--bg-secondary);
 }
-
-::-webkit-scrollbar-thumb {
+.dark ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(34, 211, 238, 0.4), rgba(139, 92, 246, 0.4));
   border-radius: 8px;
   border: 2px solid var(--bg-secondary);
 }
-
-::-webkit-scrollbar-thumb:hover {
+.dark ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(34, 211, 238, 0.6), rgba(139, 92, 246, 0.6));
+}
+
+/* 自定义滚动条 - 浅色 */
+.light ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.light ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+.light ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(8, 145, 178, 0.35), rgba(124, 58, 237, 0.35));
+  border-radius: 8px;
+  border: 2px solid var(--bg-secondary);
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(8, 145, 178, 0.55), rgba(124, 58, 237, 0.55));
 }
 
 /* 选择文本 */
 ::selection {
   background: rgba(34, 211, 238, 0.25);
   color: var(--text-primary);
+}
+.light ::selection {
+  background: rgba(8, 145, 178, 0.18);
 }
 
 /* 动画关键帧 */
@@ -128,6 +211,14 @@ body::after {
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.1); }
   50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.25); }
+}
+
+.light .animate-pulse-glow {
+  animation-name: pulse-glow-light;
+}
+@keyframes pulse-glow-light {
+  0%, 100% { box-shadow: 0 0 20px rgba(8, 145, 178, 0.08); }
+  50% { box-shadow: 0 0 40px rgba(8, 145, 178, 0.2); }
 }
 
 @keyframes slide-up {
@@ -151,12 +242,25 @@ body::after {
   50% { border-color: rgba(34, 211, 238, 0.6); }
 }
 
+.light .animate-border-glow {
+  animation-name: border-glow-light;
+}
+@keyframes border-glow-light {
+  0%, 100% { border-color: rgba(8, 145, 178, 0.25); }
+  50% { border-color: rgba(8, 145, 178, 0.55); }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
 .animate-shimmer {
   background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+.light .animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(8, 145, 178, 0.08), transparent);
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
 }
@@ -229,6 +333,9 @@ body::after {
   opacity: 0;
   transition: opacity 0.4s ease;
 }
+.light .card-enhanced::before {
+  background: linear-gradient(135deg, transparent 0%, rgba(8, 145, 178, 0.12) 50%, transparent 100%);
+}
 
 .card-enhanced:hover {
   transform: translateY(-4px);
@@ -259,15 +366,15 @@ body::after {
 .stagger-5 { animation-delay: 0.5s; }
 .stagger-6 { animation-delay: 0.6s; }
 
-/* 隐藏 Radix 默认的一些不想要的样式 */
-[class*="rt-CardRoot"],
-[class*="rt-BaseCard"] {
+/* 隐藏 Radix 默认的一些不想要的样式 - 深色 */
+.dark [class*="rt-CardRoot"],
+.dark [class*="rt-BaseCard"] {
   background: var(--bg-card) !important;
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle) !important;
 }
 
-[class*="rt-Code"] {
+.dark [class*="rt-Code"] {
   background: rgba(34, 211, 238, 0.08) !important;
   border: 1px solid rgba(34, 211, 238, 0.15) !important;
   color: var(--accent-primary) !important;
@@ -278,23 +385,58 @@ body::after {
   font-weight: 500 !important;
 }
 
-[class*="rt-DialogContent"] {
+.dark [class*="rt-DialogContent"] {
   background: var(--bg-secondary) !important;
   backdrop-filter: blur(24px);
   border: 1px solid var(--border-medium) !important;
   box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6), var(--shadow-glow-violet) !important;
 }
 
-[class*="rt-SelectTrigger"],
-[class*="rt-SelectContent"] {
+.dark [class*="rt-SelectTrigger"],
+.dark [class*="rt-SelectContent"] {
   background: var(--bg-tertiary) !important;
   border: 1px solid var(--border-subtle) !important;
 }
 
-[class*="rt-SelectItem"]:hover {
+.dark [class*="rt-SelectItem"]:hover {
   background: rgba(34, 211, 238, 0.1) !important;
 }
 
-[class*="rt-CalloutRoot"] {
+.dark [class*="rt-CalloutRoot"] {
   border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 浅色 Radix 覆盖 */
+.light [class*="rt-CardRoot"],
+.light [class*="rt-BaseCard"] {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.light [class*="rt-Code"] {
+  background: rgba(8, 145, 178, 0.06) !important;
+  border: 1px solid rgba(8, 145, 178, 0.12) !important;
+  color: var(--accent-primary) !important;
+}
+
+.light [class*="rt-DialogContent"] {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-medium) !important;
+  box-shadow: 0 32px 64px rgba(15, 23, 42, 0.15), var(--shadow-glow-violet) !important;
+}
+
+.light [class*="rt-SelectTrigger"],
+.light [class*="rt-SelectContent"] {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.light [class*="rt-SelectItem"]:hover {
+  background: rgba(8, 145, 178, 0.08) !important;
+}
+
+.light [class*="rt-CalloutRoot"] {
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
 }

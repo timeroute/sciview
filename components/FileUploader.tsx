@@ -30,6 +30,8 @@ export default function FileUploader({ onFileLoaded, acceptFormats = ".nc,.netcd
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // 允许用户再次选择同一个文件
+    e.target.value = '';
     if (file) processFile(file);
   };
 
@@ -51,6 +53,12 @@ export default function FileUploader({ onFileLoaded, acceptFormats = ".nc,.netcd
 
   const formatLabel = acceptFormats.split(',').map(f => f.trim()).join(' · ');
   const inputId = `file-upload-${acceptFormats.replace(/[.,]/g, '-')}`;
+  // 友好的格式说明文字（补充说明非标准后缀也可识别）
+  const friendlyFormatDesc = acceptFormats.includes('.nc')
+    ? '支持 NetCDF（.nc、_nc、.netcdf 等）与 HDF5（.h5、_h5、.hdf5、.he5 等）格式，文件后缀不标准也可尝试打开，自动识别真实内容'
+    : acceptFormats.includes('.h5')
+      ? '支持 HDF5（.h5、_h5、.hdf5、.he5 等）与 NetCDF（.nc、_nc、.netcdf 等）格式，自动按内容识别，后缀不标准也能打开'
+      : `推荐格式：${formatLabel}（自动识别内容，后缀不标准也可尝试）`;
 
   return (
     <Box>
@@ -102,7 +110,7 @@ export default function FileUploader({ onFileLoaded, acceptFormats = ".nc,.netcd
 
         <input
           type="file"
-          accept={acceptFormats}
+          accept={`${acceptFormats},*/*`}
           onChange={handleFile}
           style={{ display: 'none' }}
           id={inputId}
@@ -204,11 +212,12 @@ export default function FileUploader({ onFileLoaded, acceptFormats = ".nc,.netcd
                   color: 'var(--text-tertiary)',
                   lineHeight: 1.6,
                   textAlign: 'center',
+                  maxWidth: '560px',
                 }}
               >
                 {loading
                   ? '请稍候，正在读取文件内容和元数据'
-                  : `支持格式：${formatLabel}`}
+                  : friendlyFormatDesc}
               </Text>
             </Flex>
 

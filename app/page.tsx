@@ -2,6 +2,7 @@
 
 import { Container, Heading, Text, Flex, Box, Card, Grid, Badge, Button } from '@radix-ui/themes';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const tools = [
   {
@@ -85,12 +86,17 @@ export default function Home() {
         }}
       />
 
-      <Container size="3" p="8" style={{ paddingTop: '80px', paddingBottom: '120px' }}>
+      <Container size="3" p="8" style={{ paddingTop: '40px', paddingBottom: '120px' }}>
+        {/* 顶部主题切换 */}
+        <Flex justify="end" align="center" className="animate-slide-up" style={{ marginBottom: '40px' }}>
+          <ThemeToggle />
+        </Flex>
+
         {/* Hero Section */}
-        <Box className="animate-slide-up" style={{ marginBottom: '80px', textAlign: 'center' }}>
+        <Box className="animate-slide-up stagger-1" style={{ marginBottom: '80px', textAlign: 'center' }}>
           <Flex direction="column" gap="5" align="center">
             {/* 徽章 */}
-            <Flex gap="2" align="center" className="animate-slide-up stagger-1">
+            <Flex gap="2" align="center" className="animate-slide-up stagger-2">
               <span className="data-dot" />
               <Badge
                 size="2"
@@ -112,7 +118,7 @@ export default function Home() {
 
             {/* 主标题 */}
             <Heading
-              className="animate-slide-up stagger-2"
+              className="animate-slide-up stagger-3"
               size="9"
               weight="bold"
               align="center"
@@ -134,7 +140,7 @@ export default function Home() {
             <Text
               size="5"
               align="center"
-              className="animate-slide-up stagger-3"
+              className="animate-slide-up stagger-4"
               style={{
                 color: 'var(--text-secondary)',
                 maxWidth: '600px',
@@ -151,7 +157,7 @@ export default function Home() {
               gap="4"
               justify="center"
               wrap="wrap"
-              className="animate-slide-up stagger-4"
+              className="animate-slide-up stagger-5"
               style={{ marginTop: '16px' }}
             >
               <Box
@@ -205,7 +211,7 @@ export default function Home() {
                 key={tool.href}
                 href={tool.href}
                 style={{ textDecoration: 'none', display: 'block' }}
-                className={`animate-slide-up stagger-${idx + 2}`}
+                className={`animate-slide-up stagger-${idx + 3}`}
               >
                 <Box
                   className="card-enhanced"

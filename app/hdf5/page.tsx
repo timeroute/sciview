@@ -6,6 +6,7 @@ import Link from 'next/link';
 import FileUploader from '@/components/FileUploader';
 import HDF5Viewer from '@/components/HDF5Viewer';
 import { FileInfo } from '@/lib/parsers';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function HDF5Page() {
   const [file, setFile] = useState<FileInfo | null>(null);
@@ -128,7 +129,8 @@ export default function HDF5Page() {
             </Flex>
           </Flex>
 
-          <Flex gap="2" align="center">
+          <Flex gap="3" align="center">
+            <ThemeToggle />
             <span className="data-dot" style={{ background: 'var(--accent-violet)', boxShadow: '0 0 12px var(--accent-violet)' }} />
             <Text
               size="2"

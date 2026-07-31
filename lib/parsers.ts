@@ -35,6 +35,82 @@ export interface FileInfo {
   fileSize?: number;
 }
 
+// 宽松匹配：文件名中包含格式关键字（不要求严格以 .xxx 结尾）
+// 比如 file_nc、data_hdf5.bin、something_h5_v2 都能匹配
+const NETCDF_PATTERNS = [
+  /\.nc\d*$/i,          // .nc .nc1 .nc4 等
+  /\.netcdf$/i,         // .netcdf
+  /[^a-z0-9]nc\d*$/i,   // _nc -nc 之类分隔符结尾
+  /[^a-z0-9]netcdf$/i,  // _netcdf -netcdf
+];
+
+const HDF5_PATTERNS = [
+  /\.h5$/i,
+  /\.hdf5?$/i,          // .hdf .hdf5
+  /\.he5$/i,
+  /[^a-z0-9]h5$/i,
+  /[^a-z0-9]hdf5?$/i,
+  /[^a-z0-9]he5$/i,
+];
+
+// 检查是否符合 NetCDF 命名模式
+function matchNetCDFName(name: string): boolean {
+  const base = name.toLowerCase();
+  // 首先去掉常见压缩后缀，再做匹配
+  const cleaned = base.replace(/\.(gz|bz2|zip|xz)$/i, '');
+  return NETCDF_PATTERNS.some(p => p.test(base) || p.test(cleaned));
+}
+
+// 检查是否符合 HDF5 命名模式
+function matchHDF5Name(name: string): boolean {
+  const base = name.toLowerCase();
+  const cleaned = base.replace(/\.(gz|bz2|zip|xz)$/i, '');
+  return HDF5_PATTERNS.some(p => p.test(base) || p.test(cleaned));
+}
+
+// 通过 Magic Bytes / 文件签名判断真实格式
+// NetCDF Classic: "CDF\001" 或 "CDF\002"
+// NetCDF-4 / HDF5: "\x89HDF\r\n\x1a\n" (HDF5 signature)
+function detectFormatByBuffer(buffer: ArrayBuffer): 'netcdf' | 'hdf5' | null {
+  try {
+    const bytes = new Uint8Array(buffer, 0, Math.min(16, buffer.byteLength));
+
+    // HDF5 / NetCDF4 签名：89 48 44 46 0D 0A 1A 0A
+    const hdf5Sig = [0x89, 0x48, 0x44, 0x46, 0x0D, 0x0A, 0x1A, 0x0A];
+    if (hdf5Sig.every((b, i) => bytes[i] === b)) {
+      return 'hdf5';
+    }
+
+    // NetCDF Classic 签名: "CDF\x01" 或 "CDF\x02"
+    if (bytes[0] === 0x43 && bytes[1] === 0x44 && bytes[2] === 0x46 &&
+        (bytes[3] === 0x01 || bytes[3] === 0x02)) {
+      return 'netcdf';
+    }
+
+    // NetCDF-64bit offset: "CDF\x05" 或 "CDF\x06"
+    if (bytes[0] === 0x43 && bytes[1] === 0x44 && bytes[2] === 0x46 &&
+        (bytes[3] === 0x05 || bytes[3] === 0x06)) {
+      return 'netcdf';
+    }
+  } catch (e) {
+    // 读取错误，不做判断
+  }
+  return null;
+}
+
+// 尝试通过解析结果判断格式
+async function tryParse(buffer: ArrayBuffer, format: 'netcdf' | 'hdf5'): Promise<FileInfo | null> {
+  try {
+    if (format === 'netcdf') {
+      return await parseNetCDF(buffer);
+    } else {
+      return await parseHDF5(buffer);
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 export async function parseNetCDF(buffer: ArrayBuffer): Promise<FileInfo> {
   const nc = new NetCDFReader(buffer);
   
@@ -140,18 +216,73 @@ export async function parseHDF5(buffer: ArrayBuffer): Promise<FileInfo> {
 
 export async function parseFile(file: File): Promise<FileInfo> {
   const buffer = await file.arrayBuffer();
-  const ext = file.name.toLowerCase();
-  
-  let info: FileInfo;
-  if (ext.endsWith('.nc') || ext.endsWith('.netcdf')) {
-    info = await parseNetCDF(buffer);
-  } else if (ext.endsWith('.h5') || ext.endsWith('.hdf5') || ext.endsWith('.hdf') || ext.endsWith('.he5')) {
-    info = await parseHDF5(buffer);
+  const name = file.name || '';
+
+  // 第一步：通过 Magic Bytes 判断真实格式（最可靠）
+  const detectedByMagic = detectFormatByBuffer(buffer);
+
+  // 第二步：通过文件名宽松匹配
+  const isNetCDFName = matchNetCDFName(name);
+  const isHDF5Name = matchHDF5Name(name);
+
+  let info: FileInfo | null = null;
+  let primaryFormat: 'netcdf' | 'hdf5' | null = null;
+  let secondaryFormat: 'netcdf' | 'hdf5' | null = null;
+
+  // 以 Magic Bytes 优先，其次是文件名匹配
+  if (detectedByMagic) {
+    primaryFormat = detectedByMagic;
+  } else if (isNetCDFName && !isHDF5Name) {
+    primaryFormat = 'netcdf';
+  } else if (isHDF5Name && !isNetCDFName) {
+    primaryFormat = 'hdf5';
+  } else if (isNetCDFName && isHDF5Name) {
+    // 文件名同时匹配两种格式时，NetCDF 优先
+    primaryFormat = 'netcdf';
+    secondaryFormat = 'hdf5';
   } else {
-    throw new Error('不支持的文件格式。请上传 .nc 或 .netcdf 文件。');
+    // 无任何匹配线索时，两种都试
+    primaryFormat = 'netcdf';
+    secondaryFormat = 'hdf5';
   }
 
-  info.fileName = file.name;
-  info.fileSize = file.size;
-  return info;
+  // 尝试主格式解析
+  info = await tryParse(buffer, primaryFormat);
+
+  // 失败则尝试次格式
+  if (!info && secondaryFormat) {
+    info = await tryParse(buffer, secondaryFormat);
+  }
+
+  // 如果仍失败，强制主格式再抛一次错误给用户查看具体原因
+  if (!info) {
+    try {
+      if (primaryFormat === 'netcdf') {
+        info = await parseNetCDF(buffer);
+      } else {
+        info = await parseHDF5(buffer);
+      }
+    } catch (e: any) {
+      const hint = primaryFormat === 'netcdf'
+        ? '（尝试按 NetCDF 解析失败）'
+        : '（尝试按 HDF5 解析失败）';
+      const message = (e && e.message) ? String(e.message) : '未知错误';
+      throw new Error(
+        '无法识别的文件格式。' +
+        '支持 NetCDF（.nc、_nc、.netcdf 等）与 HDF5（.h5、_h5、.hdf5、.he5 等）格式。' +
+        hint + ' 详细信息：' + message
+      );
+    }
+  }
+
+  if (info) {
+    info.fileName = file.name;
+    info.fileSize = file.size;
+    return info;
+  }
+
+  // 兜底错误
+  throw new Error(
+    '不支持的文件格式。请上传 NetCDF（.nc、_nc、.netcdf 等）或 HDF5（.h5、_h5、.hdf5、.he5 等）格式的文件。'
+  );
 }
