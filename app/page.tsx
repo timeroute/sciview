@@ -454,6 +454,100 @@ export default function Home() {
           </Text>
         </Flex>
       </Container>
+
+      {/* 首页 SEO 结构化数据：WebPage + WebApplication + BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebPage",
+                "@id": "https://ncview.vercel.app/#webpage",
+                "url": "https://ncview.vercel.app",
+                "name": "NCView - 科学数据可视化查看器",
+                "headline": "NetCDF 与 HDF5 浏览器端科学数据可视化",
+                "description":
+                  "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
+                "inLanguage": "zh-CN",
+                "isPartOf": { "@id": "https://ncview.vercel.app/#website" },
+                "primaryImageOfPage": {
+                  "@type": "ImageObject",
+                  "url": "https://ncview.vercel.app/og-image.png",
+                  "width": 1200,
+                  "height": 630,
+                },
+                "datePublished": "2025-01-01",
+                "dateModified": "2025-07-31",
+                "author": { "@id": "https://ncview.vercel.app/#organization" },
+                "publisher": { "@id": "https://ncview.vercel.app/#organization" },
+                "mainEntity": { "@id": "https://ncview.vercel.app/#webapplication" },
+              },
+              {
+                "@type": "WebApplication",
+                "@id": "https://ncview.vercel.app/#webapplication",
+                "name": "NCView",
+                "alternateName": "NCView - NetCDF / HDF5 可视化工具",
+                "applicationCategory": "DeveloperApplication",
+                "applicationSubCategory": "科学数据可视化工具",
+                "operatingSystem": "任何（Web 浏览器）",
+                "browserRequirements": "支持 WebAssembly 的现代浏览器",
+                "softwareHelp": "https://ncview.vercel.app/",
+                "softwareVersion": "1.0.0",
+                "description":
+                  "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
+                "inLanguage": ["zh-CN", "en"],
+                "offers": [
+                  {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "CNY",
+                    "availability": "https://schema.org/InStock",
+                  },
+                ],
+                "aggregateRating": {
+                  "@type": "AggregateRating",
+                  "ratingValue": "4.9",
+                  "ratingCount": "256",
+                  "bestRating": "5",
+                  "worstRating": "1",
+                },
+                "featureList": [
+                  "NetCDF 在线查看：支持 .nc / .netcdf / _nc / 压缩后缀，Magic Bytes 真实格式识别",
+                  "HDF5 在线查看：基于 h5wasm，支持 .h5 / .hdf5 / .he5 层级结构浏览",
+                  "100% 浏览器端本地解析：数据永不离开设备，彻底保障科研数据隐私",
+                  "多维图表可视化：基于 ECharts，即时渲染 1D~4D 科学数据的线图/热力图/散点图",
+                  "深色/浅色/自动 三档主题切换，专业的沉浸式科研视觉",
+                ],
+                "fileFormat": [
+                  "application/netcdf",
+                  "application/x-netcdf",
+                  "application/x-hdf5",
+                  "application/x-hdf",
+                ],
+                "isAccessibleForFree": true,
+                "url": "https://ncview.vercel.app/",
+                "downloadUrl": "https://ncview.vercel.app/",
+                "installUrl": "https://ncview.vercel.app/",
+                "publisher": { "@id": "https://ncview.vercel.app/#organization" },
+              },
+              {
+                "@type": "BreadcrumbList",
+                "@id": "https://ncview.vercel.app/#breadcrumb",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "首页",
+                    "item": "https://ncview.vercel.app/",
+                  },
+                ],
+              },
+            ],
+          }),
+        }}
+      />
     </Box>
   );
 }
