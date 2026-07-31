@@ -31,6 +31,8 @@ export interface FileInfo {
   globalAttributes: Attribute[];
   dimensions: { name: string; size: number }[];
   variables: Variable[];
+  fileName?: string;
+  fileSize?: number;
 }
 
 export async function parseNetCDF(buffer: ArrayBuffer): Promise<FileInfo> {
@@ -140,11 +142,16 @@ export async function parseFile(file: File): Promise<FileInfo> {
   const buffer = await file.arrayBuffer();
   const ext = file.name.toLowerCase();
   
+  let info: FileInfo;
   if (ext.endsWith('.nc') || ext.endsWith('.netcdf')) {
-    return parseNetCDF(buffer);
+    info = await parseNetCDF(buffer);
   } else if (ext.endsWith('.h5') || ext.endsWith('.hdf5') || ext.endsWith('.hdf') || ext.endsWith('.he5')) {
-    return parseHDF5(buffer);
+    info = await parseHDF5(buffer);
+  } else {
+    throw new Error('不支持的文件格式。请上传 .nc 或 .netcdf 文件。');
   }
-  
-  throw new Error('不支持的文件格式。请上传 .nc 或 .netcdf 文件。');
+
+  info.fileName = file.name;
+  info.fileSize = file.size;
+  return info;
 }
