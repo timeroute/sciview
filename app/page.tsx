@@ -1,44 +1,453 @@
-import { Container, Heading, Text, Flex, Card, Grid } from '@radix-ui/themes';
+'use client';
+
+import { Container, Heading, Text, Flex, Box, Card, Grid, Badge, Button } from '@radix-ui/themes';
 import Link from 'next/link';
 
 const tools = [
   {
     name: 'NetCDF Viewer',
-    description: '查看 NetCDF 文件的元数据、维度和变量',
+    description: '探索 NetCDF 格式的多维科学数据，查看元数据、维度信息与变量结构，支持即时数据可视化',
     href: '/netcdf',
-    icon: '📊'
+    tag: '.nc / .netcdf',
+    gradient: 'cyan',
+    features: ['多维数据解析', '元数据浏览', '变量预览', '图表可视化'],
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#22d3ee" />
+            <stop offset="100%" stopColor="#0891b2" />
+          </linearGradient>
+        </defs>
+        <rect x="4" y="8" width="40" height="32" rx="4" fill="url(#g1)" opacity="0.15" />
+        <rect x="4" y="8" width="40" height="32" rx="4" stroke="url(#g1)" strokeWidth="1.5" />
+        <path d="M10 20 L20 30 L28 22 L38 34" stroke="url(#g1)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="10" cy="20" r="2" fill="url(#g1)" />
+        <circle cx="20" cy="30" r="2" fill="url(#g1)" />
+        <circle cx="28" cy="22" r="2" fill="url(#g1)" />
+        <circle cx="38" cy="34" r="2" fill="url(#g1)" />
+        <line x1="8" y1="38" x2="40" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
+        <line x1="8" y1="14" x2="8" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
+      </svg>
+    )
   },
   {
     name: 'HDF5 Viewer',
-    description: '查看 HDF5 文件的数据集、属性和组结构',
+    description: '深入查看 HDF5 层级数据结构，浏览数据集、组属性与层级关系，快速定位感兴趣的数据片段',
     href: '/hdf5',
-    icon: '📁'
+    tag: '.h5 / .hdf5 / .he5',
+    gradient: 'violet',
+    features: ['层级树结构', '数据集浏览', '属性管理', '多维可视化'],
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+        <defs>
+          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#6366f1" />
+          </linearGradient>
+        </defs>
+        <rect x="6" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.2" />
+        <rect x="6" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1.5" />
+        <rect x="24" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.15" />
+        <rect x="24" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.6" />
+        <rect x="6" y="28" width="18" height="14" rx="3" fill="url(#g2)" opacity="0.1" />
+        <rect x="6" y="28" width="18" height="14" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.5" />
+        <rect x="28" y="30" width="14" height="12" rx="2" fill="url(#g2)" opacity="0.25" />
+        <rect x="28" y="30" width="14" height="12" rx="2" stroke="url(#g2)" strokeWidth="1.5" />
+        <path d="M15 12 L15 18 M12 15 L18 15" stroke="url(#g2)" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="35" cy="36" r="2.5" fill="none" stroke="url(#g2)" strokeWidth="1.5" />
+      </svg>
+    )
   }
+];
+
+const stats = [
+  { label: '支持格式', value: '6+', sub: 'NetCDF, HDF5 等' },
+  { label: '数据维度', value: '1-4D', sub: '多维数组解析' },
+  { label: '可视化', value: '实时', sub: '图表即时渲染' },
+  { label: '运行方式', value: '本地', sub: '数据永不离开' },
 ];
 
 export default function Home() {
   return (
-    <Container size="4" p="8">
-      <Flex direction="column" gap="6">
-        <header>
-          <Heading size="8" mb="2">科学数据查看器</Heading>
-          <Text color="gray">选择一个工具开始</Text>
-        </header>
+    <Box style={{ minHeight: '100vh' }}>
+      {/* 顶部装饰条 */}
+      <Box
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'var(--gradient-primary)',
+          zIndex: 50,
+          opacity: 0.5,
+        }}
+      />
 
-        <Grid columns="2" gap="4">
-          {tools.map(tool => (
-            <Link key={tool.href} href={tool.href} style={{ textDecoration: 'none' }}>
-              <Card asChild style={{ cursor: 'pointer', height: '100%' }}>
-                <Flex direction="column" gap="2" p="4">
-                  <Text size="8">{tool.icon}</Text>
-                  <Heading size="5">{tool.name}</Heading>
-                  <Text color="gray" size="2">{tool.description}</Text>
+      <Container size="3" p="8" style={{ paddingTop: '80px', paddingBottom: '120px' }}>
+        {/* Hero Section */}
+        <Box className="animate-slide-up" style={{ marginBottom: '80px', textAlign: 'center' }}>
+          <Flex direction="column" gap="5" align="center">
+            {/* 徽章 */}
+            <Flex gap="2" align="center" className="animate-slide-up stagger-1">
+              <span className="data-dot" />
+              <Badge
+                size="2"
+                variant="soft"
+                style={{
+                  background: 'rgba(34, 211, 238, 0.1)',
+                  border: '1px solid rgba(34, 211, 238, 0.25)',
+                  color: 'var(--accent-primary)',
+                  padding: '6px 14px',
+                  borderRadius: '999px',
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                v1.0 / SCIENTIFIC DATA
+              </Badge>
+            </Flex>
+
+            {/* 主标题 */}
+            <Heading
+              className="animate-slide-up stagger-2"
+              size="9"
+              weight="bold"
+              align="center"
+              style={{
+                fontFamily: 'var(--font-display)',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.1,
+                maxWidth: '820px',
+                margin: '0 auto',
+              }}
+            >
+              <span>科学数据</span>
+              <span className="gradient-text"> 可视化</span>
+              <br />
+              <span style={{ color: 'var(--text-secondary)' }}>探索与洞察</span>
+            </Heading>
+
+            {/* 副标题 */}
+            <Text
+              size="5"
+              align="center"
+              className="animate-slide-up stagger-3"
+              style={{
+                color: 'var(--text-secondary)',
+                maxWidth: '600px',
+                lineHeight: 1.7,
+                fontWeight: 300,
+              }}
+            >
+              专业的 NetCDF 与 HDF5 文件查看工具，浏览器端即时解析多维科学数据，
+              无需上传服务器，本地安全查看，支持丰富的图表可视化。
+            </Text>
+
+            {/* CTA 装饰元素 */}
+            <Flex
+              gap="4"
+              justify="center"
+              wrap="wrap"
+              className="animate-slide-up stagger-4"
+              style={{ marginTop: '16px' }}
+            >
+              <Box
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '999px',
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  color: 'var(--accent-emerald)',
+                  fontSize: '13px',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                100% 本地处理
+              </Box>
+              <Box
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '999px',
+                  background: 'rgba(139, 92, 246, 0.08)',
+                  border: '1px solid rgba(139, 92, 246, 0.2)',
+                  color: 'var(--accent-violet)',
+                  fontSize: '13px',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18M9 21V9" />
+                </svg>
+                多维可视化
+              </Box>
+            </Flex>
+          </Flex>
+        </Box>
+
+        {/* 工具卡片网格 */}
+        <Box style={{ marginBottom: '96px' }}>
+          <Grid columns="2" gap="6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))' }}>
+            {tools.map((tool, idx) => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                style={{ textDecoration: 'none', display: 'block' }}
+                className={`animate-slide-up stagger-${idx + 2}`}
+              >
+                <Box
+                  className="card-enhanced"
+                  style={{
+                    height: '100%',
+                    padding: '32px',
+                    position: 'relative',
+                  }}
+                >
+                  {/* 渐变光效背景 */}
+                  <Box
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      borderRadius: '16px',
+                      background: tool.gradient === 'cyan'
+                        ? 'radial-gradient(circle at 0% 0%, rgba(34, 211, 238, 0.12) 0%, transparent 50%)'
+                        : 'radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 50%)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+
+                  <Flex direction="column" gap="5" style={{ position: 'relative' }}>
+                    {/* 顶部行：图标 + 标签 */}
+                    <Flex justify="between" align="start">
+                      <Box
+                        className="animate-float"
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          animationDelay: `${idx * 0.5}s`,
+                        }}
+                      >
+                        {tool.icon}
+                      </Box>
+                      <Badge
+                        size="2"
+                        variant="solid"
+                        style={{
+                          background: tool.gradient === 'cyan'
+                            ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.08))'
+                            : 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.08))',
+                          border: `1px solid ${tool.gradient === 'cyan' ? 'rgba(34, 211, 238, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`,
+                          color: tool.gradient === 'cyan' ? 'var(--accent-primary)' : 'var(--accent-secondary)',
+                          fontFamily: 'var(--font-mono)',
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {tool.tag}
+                      </Badge>
+                    </Flex>
+
+                    {/* 标题 + 描述 */}
+                    <Flex direction="column" gap="3">
+                      <Heading
+                        size="6"
+                        weight="bold"
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          letterSpacing: '-0.01em',
+                          color: 'var(--text-primary)',
+                        }}
+                      >
+                        {tool.name}
+                      </Heading>
+                      <Text
+                        size="3"
+                        style={{
+                          color: 'var(--text-secondary)',
+                          lineHeight: 1.7,
+                        }}
+                      >
+                        {tool.description}
+                      </Text>
+                    </Flex>
+
+                    {/* 特性列表 */}
+                    <Flex gap="2" wrap="wrap" style={{ marginTop: '8px' }}>
+                      {tool.features.map(f => (
+                        <Box
+                          key={f}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '8px',
+                            background: 'var(--bg-tertiary)',
+                            border: '1px solid var(--border-subtle)',
+                            fontSize: '12px',
+                            color: 'var(--text-secondary)',
+                            fontFamily: 'var(--font-mono)',
+                          }}
+                        >
+                          {f}
+                        </Box>
+                      ))}
+                    </Flex>
+
+                    {/* 底部 CTA */}
+                    <Flex justify="between" align="center" style={{ paddingTop: '16px', marginTop: '8px', borderTop: '1px solid var(--border-subtle)' }}>
+                      <Text size="2" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
+                        点击进入 →
+                      </Text>
+                      <Box
+                        style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          background: tool.gradient === 'cyan'
+                            ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(34, 211, 238, 0.05))'
+                            : 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05))',
+                          border: `1px solid ${tool.gradient === 'cyan' ? 'rgba(34, 211, 238, 0.25)' : 'rgba(139, 92, 246, 0.25)'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: tool.gradient === 'cyan' ? 'var(--accent-primary)' : 'var(--accent-secondary)',
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </Box>
+                    </Flex>
+                  </Flex>
+                </Box>
+              </Link>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* 数据统计 */}
+        <Box className="animate-slide-up stagger-4" style={{ marginBottom: '96px' }}>
+          <Box
+            className="glass-effect"
+            style={{
+              borderRadius: '20px',
+              padding: '48px 40px',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <Box
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'radial-gradient(ellipse at 50% 0%, rgba(34, 211, 238, 0.08) 0%, transparent 60%)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            <Flex direction="column" gap="2" align="center" style={{ marginBottom: '40px' }}>
+              <Text
+                size="2"
+                style={{
+                  color: 'var(--accent-primary)',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                // 核心特性
+              </Text>
+              <Heading
+                size="5"
+                weight="bold"
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                为科研工作流而生
+              </Heading>
+            </Flex>
+
+            <Grid columns="4" gap="6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+              {stats.map((s, i) => (
+                <Flex
+                  key={s.label}
+                  direction="column"
+                  gap="2"
+                  align="center"
+                  style={{
+                    padding: '24px 16px',
+                    borderRadius: '12px',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-subtle)',
+                    position: 'relative',
+                  }}
+                  className={`animate-slide-up stagger-${i + 1}`}
+                >
+                  <Text
+                    size="8"
+                    weight="bold"
+                    className="gradient-text"
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {s.value}
+                  </Text>
+                  <Text size="3" weight="medium" style={{ color: 'var(--text-primary)' }}>
+                    {s.label}
+                  </Text>
+                  <Text size="2" style={{ color: 'var(--text-tertiary)' }}>
+                    {s.sub}
+                  </Text>
                 </Flex>
-              </Card>
-            </Link>
-          ))}
-        </Grid>
-      </Flex>
-    </Container>
+              ))}
+            </Grid>
+          </Box>
+        </Box>
+
+        {/* 底部说明 */}
+        <Flex direction="column" gap="3" align="center" className="animate-slide-up stagger-6">
+          <Flex gap="3" align="center" style={{ opacity: 0.6 }}>
+            <Text size="2" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
+              Powered by
+            </Text>
+            <Flex gap="4" align="center">
+              <Text size="2" weight="medium" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                netcdfjs
+              </Text>
+              <Text size="1" style={{ color: 'var(--text-muted)' }}>•</Text>
+              <Text size="2" weight="medium" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                h5wasm
+              </Text>
+              <Text size="1" style={{ color: 'var(--text-muted)' }}>•</Text>
+              <Text size="2" weight="medium" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                ECharts
+              </Text>
+            </Flex>
+          </Flex>
+          <Text size="1" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', opacity: 0.7 }}>
+            NCView © 2025 — 在浏览器中探索科学数据的无限可能
+          </Text>
+        </Flex>
+      </Container>
+    </Box>
   );
 }
