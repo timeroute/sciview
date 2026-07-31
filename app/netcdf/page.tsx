@@ -6,6 +6,7 @@ import Link from 'next/link';
 import FileUploader from '@/components/FileUploader';
 import FileViewer from '@/components/FileViewer';
 import { FileInfo } from '@/lib/parsers';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function NetCDFPage() {
   const [file, setFile] = useState<FileInfo | null>(null);
@@ -128,7 +129,8 @@ export default function NetCDFPage() {
             </Flex>
           </Flex>
 
-          <Flex gap="2" align="center">
+          <Flex gap="3" align="center">
+            <ThemeToggle />
             <span className="data-dot" />
             <Text
               size="2"
