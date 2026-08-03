@@ -7,9 +7,12 @@ import FileUploader from '@/components/FileUploader';
 import HDF5Viewer from '@/components/HDF5Viewer';
 import { FileInfo } from '@/lib/parsers';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useI18n } from '@/lib/i18n';
 
 export default function HDF5Page() {
   const [file, setFile] = useState<FileInfo | null>(null);
+  const { t, formatLocale } = useI18n();
 
   return (
     <Box style={{ minHeight: '100vh' }}>
@@ -62,7 +65,7 @@ export default function HDF5Page() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                返回首页
+                {t('common.backHome')}
               </Button>
             </Link>
             <Box
@@ -87,16 +90,16 @@ export default function HDF5Page() {
               >
                 <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
                   <defs>
-                    <linearGradient id="h5fg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="h5fg-page" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#8b5cf6" />
                       <stop offset="100%" stopColor="#6366f1" />
                     </linearGradient>
                   </defs>
-                  <rect x="6" y="6" width="18" height="18" rx="3" fill="none" stroke="url(#h5fg)" strokeWidth="2" />
-                  <rect x="24" y="6" width="18" height="18" rx="3" fill="none" stroke="url(#h5fg)" strokeWidth="1.5" opacity="0.7" />
-                  <rect x="6" y="28" width="18" height="14" rx="3" fill="none" stroke="url(#h5fg)" strokeWidth="1.5" opacity="0.5" />
-                  <rect x="28" y="30" width="14" height="12" rx="2" fill="none" stroke="url(#h5fg)" strokeWidth="2" />
-                  <path d="M15 12 L15 18 M12 15 L18 15" stroke="url(#h5fg)" strokeWidth="2" strokeLinecap="round" />
+                  <rect x="6" y="6" width="18" height="18" rx="3" fill="none" stroke="url(#h5fg-page)" strokeWidth="2" />
+                  <rect x="24" y="6" width="18" height="18" rx="3" fill="none" stroke="url(#h5fg-page)" strokeWidth="1.5" opacity="0.7" />
+                  <rect x="6" y="28" width="18" height="14" rx="3" fill="none" stroke="url(#h5fg-page)" strokeWidth="1.5" opacity="0.5" />
+                  <rect x="28" y="30" width="14" height="12" rx="2" fill="none" stroke="url(#h5fg-page)" strokeWidth="2" />
+                  <path d="M15 12 L15 18 M12 15 L18 15" stroke="url(#h5fg-page)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </Box>
               <Flex direction="column" gap="0">
@@ -110,7 +113,7 @@ export default function HDF5Page() {
                     lineHeight: 1.2,
                   }}
                 >
-                  HDF5 Viewer
+                  {t('hdf5.title')}
                 </Heading>
                 <Flex gap="2" align="center">
                   <Badge
@@ -122,7 +125,7 @@ export default function HDF5Page() {
                       fontFamily: 'var(--font-mono)',
                     }}
                   >
-                    .h5 / .hdf5 / .he5
+                    {t('hdf5.badge')}
                   </Badge>
                 </Flex>
               </Flex>
@@ -130,6 +133,7 @@ export default function HDF5Page() {
           </Flex>
 
           <Flex gap="3" align="center">
+            <LanguageSwitcher compact />
             <ThemeToggle />
             <span className="data-dot" style={{ background: 'var(--accent-violet)', boxShadow: '0 0 12px var(--accent-violet)' }} />
             <Text
@@ -140,7 +144,7 @@ export default function HDF5Page() {
                 fontSize: '12px',
               }}
             >
-              就绪
+              {t('common.ready')}
             </Text>
           </Flex>
         </Flex>
@@ -165,7 +169,7 @@ export default function HDF5Page() {
                     animation: 'gradient-shift 4s ease infinite',
                   }}
                 >
-                  加载 HDF5 文件
+                  {t('hdf5.loadTitle')}
                 </Heading>
                 <Text
                   size="3"
@@ -176,8 +180,7 @@ export default function HDF5Page() {
                     lineHeight: 1.7,
                   }}
                 >
-                  支持 .h5、.hdf5 和 .he5 等层级数据格式，所有解析均在本地浏览器完成，
-                  您的数据完全私密，不会离开您的设备。
+                  {t('hdf5.loadSubtitle')}
                 </Text>
               </Flex>
               <Box style={{ width: '100%', maxWidth: '720px' }}>
@@ -208,7 +211,7 @@ export default function HDF5Page() {
                   </Box>
                   <Flex direction="column" gap="1">
                     <Text size="3" weight="medium" style={{ color: 'var(--text-primary)' }}>
-                      {file.fileName || '已加载文件'}
+                      {file.fileName || t('common.loadedFile')}
                     </Text>
                     <Flex gap="3" align="center">
                       <Badge
@@ -231,7 +234,7 @@ export default function HDF5Page() {
                           fontFamily: 'var(--font-mono)',
                         }}
                       >
-                        {file.variables.length} 数据集
+                        {formatLocale(file.variables.length)} {t('common.datasets')}
                       </Badge>
                       <Badge
                         size="1"
@@ -242,7 +245,7 @@ export default function HDF5Page() {
                           fontFamily: 'var(--font-mono)',
                         }}
                       >
-                        {file.globalAttributes.length} 属性
+                        {formatLocale(file.globalAttributes.length)} {t('common.attributes')}
                       </Badge>
                     </Flex>
                   </Flex>
@@ -264,7 +267,7 @@ export default function HDF5Page() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
                     <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                   </svg>
-                  关闭文件
+                  {t('common.closeFile')}
                 </Button>
               </Flex>
 

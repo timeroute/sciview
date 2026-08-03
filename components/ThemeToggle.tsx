@@ -2,10 +2,12 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState, ReactNode } from 'react';
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Box, Flex, Text, Tooltip } from '@radix-ui/themes';
+import { useI18n } from '@/lib/i18n';
 
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { t } = useI18n();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export function ThemeToggle() {
   const options: { value: 'light' | 'dark' | 'system'; label: string; icon: ReactNode }[] = [
     {
       value: 'light',
-      label: '日间',
+      label: t('theme.light'),
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="4" />
@@ -30,7 +32,7 @@ export function ThemeToggle() {
     },
     {
       value: 'system',
-      label: '自动',
+      label: t('theme.system'),
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -41,7 +43,7 @@ export function ThemeToggle() {
     },
     {
       value: 'dark',
-      label: '夜间',
+      label: t('theme.dark'),
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -72,35 +74,37 @@ export function ThemeToggle() {
           ? (current === 'dark' ? 'var(--accent-secondary)' : 'var(--accent-secondary)')
           : (current === 'dark' ? '#22d3ee' : '#0891b2');
         return (
-          <button
-            key={opt.value}
-            onClick={() => setTheme(opt.value)}
-            style={{
-              position: 'relative',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              fontWeight: 500,
-              background: isActive
-                ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(139, 92, 246, 0.2))'
-                : 'transparent',
-              color: isActive ? activeColor : 'var(--text-tertiary)',
-              borderWidth: '1px',
-              borderStyle: 'solid',
-              borderColor,
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {opt.icon}
-            <Text size="2" style={{ fontFamily: 'inherit', fontSize: '12px' }}>
-              {opt.label}
-            </Text>
-          </button>
+          <Tooltip key={opt.value} content={opt.label}>
+            <button
+              type="button"
+              onClick={() => setTheme(opt.value)}
+              style={{
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                fontWeight: 500,
+                background: isActive
+                  ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(139, 92, 246, 0.2))'
+                  : 'transparent',
+                color: isActive ? activeColor : 'var(--text-tertiary)',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor,
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {opt.icon}
+              <Text size="2" style={{ fontFamily: 'inherit', fontSize: '12px' }}>
+                {opt.label}
+              </Text>
+            </button>
+          </Tooltip>
         );
       })}
     </Flex>

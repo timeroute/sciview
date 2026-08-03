@@ -7,9 +7,12 @@ import FileUploader from '@/components/FileUploader';
 import FileViewer from '@/components/FileViewer';
 import { FileInfo } from '@/lib/parsers';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useI18n } from '@/lib/i18n';
 
 export default function NetCDFPage() {
   const [file, setFile] = useState<FileInfo | null>(null);
+  const { t, formatLocale } = useI18n();
 
   return (
     <Box style={{ minHeight: '100vh' }}>
@@ -62,7 +65,7 @@ export default function NetCDFPage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                返回首页
+                {t('common.backHome')}
               </Button>
             </Link>
             <Box
@@ -87,16 +90,16 @@ export default function NetCDFPage() {
               >
                 <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
                   <defs>
-                    <linearGradient id="ncfg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="ncfg-page" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#22d3ee" />
                       <stop offset="100%" stopColor="#0891b2" />
                     </linearGradient>
                   </defs>
-                  <path d="M10 20 L20 30 L28 22 L38 34" stroke="url(#ncfg)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="10" cy="20" r="2.5" fill="url(#ncfg)" />
-                  <circle cx="20" cy="30" r="2.5" fill="url(#ncfg)" />
-                  <circle cx="28" cy="22" r="2.5" fill="url(#ncfg)" />
-                  <circle cx="38" cy="34" r="2.5" fill="url(#ncfg)" />
+                  <path d="M10 20 L20 30 L28 22 L38 34" stroke="url(#ncfg-page)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="10" cy="20" r="2.5" fill="url(#ncfg-page)" />
+                  <circle cx="20" cy="30" r="2.5" fill="url(#ncfg-page)" />
+                  <circle cx="28" cy="22" r="2.5" fill="url(#ncfg-page)" />
+                  <circle cx="38" cy="34" r="2.5" fill="url(#ncfg-page)" />
                 </svg>
               </Box>
               <Flex direction="column" gap="0">
@@ -110,7 +113,7 @@ export default function NetCDFPage() {
                     lineHeight: 1.2,
                   }}
                 >
-                  NetCDF Viewer
+                  {t('netcdf.title')}
                 </Heading>
                 <Flex gap="2" align="center">
                   <Badge
@@ -122,7 +125,7 @@ export default function NetCDFPage() {
                       fontFamily: 'var(--font-mono)',
                     }}
                   >
-                    .nc / .netcdf
+                    {t('netcdf.badge')}
                   </Badge>
                 </Flex>
               </Flex>
@@ -130,6 +133,7 @@ export default function NetCDFPage() {
           </Flex>
 
           <Flex gap="3" align="center">
+            <LanguageSwitcher compact />
             <ThemeToggle />
             <span className="data-dot" />
             <Text
@@ -140,7 +144,7 @@ export default function NetCDFPage() {
                 fontSize: '12px',
               }}
             >
-              就绪
+              {t('common.ready')}
             </Text>
           </Flex>
         </Flex>
@@ -160,7 +164,7 @@ export default function NetCDFPage() {
                     letterSpacing: '-0.01em',
                   }}
                 >
-                  加载 NetCDF 文件
+                  {t('netcdf.loadTitle')}
                 </Heading>
                 <Text
                   size="3"
@@ -171,8 +175,7 @@ export default function NetCDFPage() {
                     lineHeight: 1.7,
                   }}
                 >
-                  支持 .nc 和 .netcdf 格式的科学数据文件，所有解析均在本地浏览器完成，
-                  您的数据不会上传至任何服务器。
+                  {t('netcdf.loadSubtitle')}
                 </Text>
               </Flex>
               <Box style={{ width: '100%', maxWidth: '720px' }}>
@@ -203,7 +206,7 @@ export default function NetCDFPage() {
                   </Box>
                   <Flex direction="column" gap="1">
                     <Text size="3" weight="medium" style={{ color: 'var(--text-primary)' }}>
-                      {file.fileName || '已加载文件'}
+                      {file.fileName || t('common.loadedFile')}
                     </Text>
                     <Flex gap="3" align="center">
                       <Badge
@@ -226,7 +229,7 @@ export default function NetCDFPage() {
                           fontFamily: 'var(--font-mono)',
                         }}
                       >
-                        {file.variables.length} 变量
+                        {formatLocale(file.variables.length)} {t('common.variables')}
                       </Badge>
                       <Badge
                         size="1"
@@ -237,7 +240,7 @@ export default function NetCDFPage() {
                           fontFamily: 'var(--font-mono)',
                         }}
                       >
-                        {file.dimensions.length} 维度
+                        {formatLocale(file.dimensions.length)} {t('common.dimensions')}
                       </Badge>
                     </Flex>
                   </Flex>
@@ -259,7 +262,7 @@ export default function NetCDFPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
                     <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                   </svg>
-                  关闭文件
+                  {t('common.closeFile')}
                 </Button>
               </Flex>
 

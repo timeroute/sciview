@@ -11,6 +11,7 @@ import {
   PLOT_2D_MAX,
   DownsampleStrategy,
 } from '@/lib/downsample';
+import { useI18n } from '@/lib/i18n';
 
 interface DataVisualizerProps {
   variables: Variable[];
@@ -33,6 +34,7 @@ type EChartsParam = {
 };
 
 export default function DataVisualizer({ variables }: DataVisualizerProps) {
+  const { t, formatLocale } = useI18n();
   const [open, setOpen] = useState(false);
   const [chartType1D, setChartType1D] = useState<ChartType1D>('line');
   const [chartType2D, setChartType2D] = useState<ChartType2D>('heatmap');
@@ -201,7 +203,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
     const toolbox = {
       feature: {
         saveAsImage: {
-          title: '下载图片',
+          title: t('visualizer.saveImage'),
           iconStyle: { borderColor: '#64748b' },
           emphasis: { iconStyle: { borderColor: '#22d3ee', textFill: '#22d3ee' } }
         }
@@ -216,7 +218,12 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
       const d2 = downsample2D(data2D, PLOT_2D_MAX.rows, PLOT_2D_MAX.cols, 'avg');
 
       if (d2.sampled) {
-        sampleInfo.text = `原始 ${d2.originalCells.toLocaleString()} 个单元 → 已降采样到 ${d2.sampledCells.toLocaleString()} 个显示（${d2.rows}×${d2.cols}）`;
+        sampleInfo.text = t('visualizer.downsampleInfo2D', {
+          original: formatLocale(d2.originalCells),
+          sampled: formatLocale(d2.sampledCells),
+          rows: d2.rows,
+          cols: d2.cols,
+        });
         sampleInfo.level = 'info';
       }
 
@@ -418,9 +425,13 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
 
     if (d1.sampled) {
       const strategyLabel =
-        pickedStrategy === 'lttb' ? 'LTTB（三角保真）' :
-        pickedStrategy === 'minmax' ? 'Min-Max（保留极值）' : '均匀采样';
-      sampleInfo.text = `原始 ${d1.originalLength.toLocaleString()} 点 → 已用 ${strategyLabel} 降采样到 ${d1.sampledLength.toLocaleString()} 点显示（极值保留）`;
+        pickedStrategy === 'lttb' ? t('visualizer.downsampleInfo1DStrategyLTTB') :
+        pickedStrategy === 'minmax' ? t('visualizer.downsampleInfo1DStrategyMinMax') : t('visualizer.downsampleInfo1DStrategyUniform');
+      sampleInfo.text = t('visualizer.downsampleInfo1D', {
+        original: formatLocale(d1.originalLength),
+        strategy: strategyLabel,
+        sampled: formatLocale(d1.sampledLength),
+      });
       sampleInfo.level = length >= 500_000 ? 'warn' : 'info';
     }
 
@@ -617,7 +628,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
           <path d="M3 3v18h18" />
           <path d="M7 16l4-4 4 4 6-6" />
         </svg>
-        绘制图表
+        {t('visualizer.button')}
       </Button>
 
       <Dialog.Root open={open} onOpenChange={(isOpen) => {
@@ -675,7 +686,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                       margin: 0,
                     }}
                   >
-                    数据可视化
+                    {t('visualizer.dialogTitle')}
                   </Dialog.Title>
                   <Flex gap="2" align="center" wrap="wrap">
                     <Badge
@@ -687,7 +698,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                         fontFamily: 'var(--font-mono)',
                       }}
                     >
-                      {vars1D.length} 1D 变量
+                      {t('visualizer.vars1D', { n: vars1D.length })}
                     </Badge>
                     <Badge
                       size="1"
@@ -698,7 +709,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                         fontFamily: 'var(--font-mono)',
                       }}
                     >
-                      {vars2D.length} 2D 变量
+                      {t('visualizer.vars2D', { n: vars2D.length })}
                     </Badge>
                   </Flex>
                 </Flex>
@@ -734,10 +745,10 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
             <Flex direction="column" gap="4">
               {!is2DMode && (
                 <Flex gap="4" align="center" direction="row" wrap="wrap">
-                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>X 轴:</Text>
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.axisX')}:</Text>
                   <Box style={{ flex: 1, minWidth: 200 }}>
                     <Select.Root value={xVar} onValueChange={setXVar}>
-                      <Select.Trigger placeholder="选择 1D 变量" />
+                      <Select.Trigger placeholder={t('visualizer.select1D')} />
                       <Select.Content>
                         {vars1D.map(v => (
                           <Select.Item key={v.name} value={v.name}>{v.name}</Select.Item>
@@ -749,18 +760,18 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
               )}
 
               <Flex gap="4" align="center" direction="row" wrap="wrap">
-                <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>Y 轴:</Text>
+                <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.axisY')}:</Text>
                 <Box style={{ flex: 1, minWidth: 200 }}>
                   <Select.Root value={yVar} onValueChange={(v) => {
                     setYVar(v);
                     if (getVarDimension(variables.find(vr => vr.name === v)!) === 2) setXVar('');
                   }}>
-                    <Select.Trigger placeholder="选择变量" />
+                    <Select.Trigger placeholder={t('visualizer.selectVar')} />
                     <Select.Content style={{ maxHeight: '320px' }}>
                       {vars1D.length > 0 && (
                         <>
                           <Select.Group>
-                            <Select.Label style={{ color: 'var(--accent-primary)' }}>1D 变量</Select.Label>
+                            <Select.Label style={{ color: 'var(--accent-primary)' }}>{t('visualizer.group1D')}</Select.Label>
                             {vars1D.map(v => (
                               <Select.Item key={v.name} value={v.name}>{v.name}</Select.Item>
                             ))}
@@ -770,7 +781,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                       )}
                       {vars2D.length > 0 && (
                         <Select.Group>
-                          <Select.Label style={{ color: 'var(--accent-violet)' }}>2D 变量</Select.Label>
+                          <Select.Label style={{ color: 'var(--accent-violet)' }}>{t('visualizer.group2D')}</Select.Label>
                           {vars2D.map(v => (
                             <Select.Item key={v.name} value={v.name}>{v.name}</Select.Item>
                           ))}
@@ -784,7 +795,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
               {/* 1D+1D 模式下的图表类型选择 */}
               {!is2DMode && yVar && getVarDimension(variables.find(vr => vr.name === yVar)!) === 1 && (
                 <Flex gap="4" align="center" direction="row" wrap="wrap">
-                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>图表类型:</Text>
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.chartType')}:</Text>
                   <Box style={{ flex: 1, minWidth: 200 }}>
                     <SegmentedControl.Root
                       value={chartType1D}
@@ -798,13 +809,13 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                       }}
                     >
                       <SegmentedControl.Item value="line" style={{ borderRadius: '8px' }}>
-                        📈 折线图
+                        {t('visualizer.line')}
                       </SegmentedControl.Item>
                       <SegmentedControl.Item value="bar" style={{ borderRadius: '8px' }}>
-                        📊 柱状图
+                        {t('visualizer.bar')}
                       </SegmentedControl.Item>
                       <SegmentedControl.Item value="scatter" style={{ borderRadius: '8px' }}>
-                        ⚬ 散点图
+                        {t('visualizer.scatter')}
                       </SegmentedControl.Item>
                     </SegmentedControl.Root>
                   </Box>
@@ -814,7 +825,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
               {/* 2D 模式下的图表类型选择：热力图 / 等高线图 */}
               {is2DMode && (
                 <Flex gap="4" align="center" direction="row" wrap="wrap">
-                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>图表类型:</Text>
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.chartType')}:</Text>
                   <Box style={{ flex: 1, minWidth: 300 }}>
                     <SegmentedControl.Root
                       value={chartType2D}
@@ -828,10 +839,10 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                       }}
                     >
                       <SegmentedControl.Item value="heatmap" style={{ borderRadius: '8px' }}>
-                        🔥 热力图
+                        {t('visualizer.heatmap')}
                       </SegmentedControl.Item>
                       <SegmentedControl.Item value="contour" style={{ borderRadius: '8px' }}>
-                        🗻 等高线图
+                        {t('visualizer.contour')}
                       </SegmentedControl.Item>
                     </SegmentedControl.Root>
                   </Box>
@@ -841,7 +852,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
               {/* 等高线图的层数调节 */}
               {is2DMode && chartType2D === 'contour' && (
                 <Flex gap="4" align="center" direction="row" wrap="wrap">
-                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>等高线数:</Text>
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.contourLevels')}:</Text>
                   <Box style={{ flex: 1, minWidth: 200 }}>
                     <SegmentedControl.Root
                       value={String(contourLevels)}
@@ -854,9 +865,9 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                         padding: '2px',
                       }}
                     >
-                      <SegmentedControl.Item value="6" style={{ borderRadius: '8px' }}>稀疏 (6)</SegmentedControl.Item>
-                      <SegmentedControl.Item value="12" style={{ borderRadius: '8px' }}>适中 (12)</SegmentedControl.Item>
-                      <SegmentedControl.Item value="20" style={{ borderRadius: '8px' }}>密集 (20)</SegmentedControl.Item>
+                      <SegmentedControl.Item value="6" style={{ borderRadius: '8px' }}>{t('visualizer.levelsSparse')}</SegmentedControl.Item>
+                      <SegmentedControl.Item value="12" style={{ borderRadius: '8px' }}>{t('visualizer.levelsMedium')}</SegmentedControl.Item>
+                      <SegmentedControl.Item value="20" style={{ borderRadius: '8px' }}>{t('visualizer.levelsDense')}</SegmentedControl.Item>
                     </SegmentedControl.Root>
                   </Box>
                 </Flex>
@@ -864,14 +875,14 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
 
               {!is2DMode && chartType1D === 'line' && (
                 <Flex gap="4" align="center" direction="row" wrap="wrap">
-                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>采样策略:</Text>
+                  <Text size="2" style={{ width: 80, color: 'var(--text-secondary)', fontWeight: 500 }}>{t('visualizer.sampleStrategy')}:</Text>
                   <Box style={{ flex: 1, minWidth: 200 }}>
                     <Select.Root value={strategy} onValueChange={(v) => setStrategy(v as DownsampleStrategy)}>
                       <Select.Trigger />
                       <Select.Content>
-                        <Select.Item value="lttb">🔻 LTTB 三角保真（默认，折线视觉最佳）</Select.Item>
-                        <Select.Item value="minmax">📊 Min-Max（保留每桶最大/最小值）</Select.Item>
-                        <Select.Item value="uniform">⚖️ 均匀采样（最简单）</Select.Item>
+                        <Select.Item value="lttb">{t('visualizer.lttb')}</Select.Item>
+                        <Select.Item value="minmax">{t('visualizer.minmax')}</Select.Item>
+                        <Select.Item value="uniform">{t('visualizer.uniform')}</Select.Item>
                       </Select.Content>
                     </Select.Root>
                   </Box>
@@ -894,7 +905,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                   </Callout.Icon>
                   <Callout.Text style={{ fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.6 }}>
                     {sampleInfoText}
-                    {sampleLevel === 'warn' && ' — 数据量较大，建议按需缩放或选择变量切片。'}
+                    {sampleLevel === 'warn' && t('visualizer.downsampleWarnSuffix')}
                   </Callout.Text>
                 </Callout.Root>
               )}
@@ -936,7 +947,7 @@ export default function DataVisualizer({ variables }: DataVisualizerProps) {
                       <line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
                     <Text size="2" style={{ color: 'rgba(252, 165, 165, 0.9)', fontFamily: 'var(--font-mono)' }}>
-                      不支持的数据维度组合：请选择两个 1D 变量（折线/柱状/散点图）或一个 2D 变量（热力图/等高线图）
+                      {t('visualizer.dimensionError')}
                     </Text>
                   </Flex>
                 </Box>

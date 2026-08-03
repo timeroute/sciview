@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Box, Card, Flex, Text, Heading, Code, Badge, ScrollArea } from '@radix-ui/themes';
 import { FileInfo, Attribute, Variable } from '@/lib/parsers';
 import DataVisualizer from './DataVisualizer';
+import { useI18n } from '@/lib/i18n';
 
 function SectionHeader({ icon, title, count, accent = 'violet' }: { icon: React.ReactNode; title: string; count?: number; accent?: 'cyan' | 'violet' | 'emerald' }) {
   const accentColors = {
@@ -74,6 +75,7 @@ function SectionHeader({ icon, title, count, accent = 'violet' }: { icon: React.
 }
 
 function AttributeList({ attributes }: { attributes: Attribute[] }) {
+  const { t } = useI18n();
   if (attributes.length === 0) {
     return (
       <Text
@@ -84,7 +86,7 @@ function AttributeList({ attributes }: { attributes: Attribute[] }) {
           fontFamily: 'var(--font-mono)',
         }}
       >
-        无属性
+        {t('viewer.noAttributes')}
       </Text>
     );
   }
@@ -137,6 +139,7 @@ function AttributeList({ attributes }: { attributes: Attribute[] }) {
 
 function DatasetCard({ variable, index }: { variable: Variable; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useI18n();
   const dimCount = variable.shape.filter(s => s > 0).length || 1;
 
   return (
@@ -285,7 +288,7 @@ function DatasetCard({ variable, index }: { variable: Variable; index: number })
                       fontSize: '11px',
                     }}
                   >
-                    属性 / Attributes
+                    {t('viewer.attributes')}
                   </Text>
                 </Flex>
                 <AttributeList attributes={variable.attributes} />
@@ -316,7 +319,7 @@ function DatasetCard({ variable, index }: { variable: Variable; index: number })
                         fontSize: '11px',
                       }}
                     >
-                      数据预览 / Data Preview
+                      {t('viewer.dataPreview')}
                     </Text>
                   </Flex>
                   <Badge
@@ -368,6 +371,7 @@ function DatasetCard({ variable, index }: { variable: Variable; index: number })
 }
 
 export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
+  const { t } = useI18n();
   return (
     <Flex direction="column" gap="6">
       {/* 顶部：格式 + 全局属性 + 可视化按钮 */}
@@ -418,7 +422,7 @@ export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
                       letterSpacing: '0.05em',
                     }}
                   >
-                    文件格式
+                    {t('viewer.fileFormat')}
                   </Text>
                   <Heading
                     size="5"
@@ -456,7 +460,7 @@ export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                   </svg>
                 }
-                title="全局属性"
+                title={t('viewer.globalAttrs')}
                 count={fileInfo.globalAttributes.length}
                 accent="cyan"
               />
@@ -481,7 +485,7 @@ export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
                     <rect x="3" y="14" width="7" height="7" />
                   </svg>
                 }
-                title="命名维度"
+                title={t('viewer.namedDims')}
                 count={fileInfo.dimensions.length}
                 accent="violet"
               />
@@ -563,7 +567,7 @@ export default function HDF5Viewer({ fileInfo }: { fileInfo: FileInfo }) {
                   <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
                 </svg>
               }
-              title="数据集"
+              title={t('viewer.datasets')}
               count={fileInfo.variables.length}
               accent="violet"
             />

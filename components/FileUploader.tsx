@@ -1,333 +1,227 @@
 'use client';
 
-import { useState } from 'react';
-import { Box, Text, Callout, Flex } from '@radix-ui/themes';
-import { parseFile, FileInfo } from '@/lib/parsers';
+import React, { useRef, useState, useCallback } from 'react';
+import { Flex, Text, Box, Badge } from '@radix-ui/themes';
+import { parseFile } from '@/lib/parsers';
+import type { FileInfo } from '@/lib/parsers';
+import { useI18n } from '@/lib/i18n';
 
 interface FileUploaderProps {
-  onFileLoaded: (info: FileInfo) => void;
+  onFileLoaded: (fileInfo: FileInfo) => void;
   acceptFormats?: string;
 }
 
-export default function FileUploader({ onFileLoaded, acceptFormats = ".nc,.netcdf,.h5,.hdf5,.hdf,.he5" }: FileUploaderProps) {
-  const [loading, setLoading] = useState(false);
+export default function FileUploader({ onFileLoaded, acceptFormats }: FileUploaderProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const { t, formatFileSize } = useI18n();
 
-  const processFile = async (file: File) => {
-    setLoading(true);
+  const handleFile = useCallback(async (file: File) => {
     setError(null);
-
+    setIsParsing(true);
     try {
       const info = await parseFile(file);
       onFileLoaded(info);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to parse file');
+    } catch (err: any) {
+      console.error('解析文件失败:', err);
+      setError(err?.message || t('upload.unknownError'));
     } finally {
-      setLoading(false);
+      setIsParsing(false);
     }
-  };
+  }, [onFileLoaded, t]);
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  }, [handleFile]);
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    // 允许用户再次选择同一个文件
-    e.target.value = '';
-    if (file) processFile(file);
+    if (file) handleFile(file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
-  const formatLabel = acceptFormats.split(',').map(f => f.trim()).join(' · ');
-  const inputId = `file-upload-${acceptFormats.replace(/[.,]/g, '-')}`;
-  // 友好的格式说明文字（补充说明非标准后缀也可识别）
-  const friendlyFormatDesc = acceptFormats.includes('.nc')
-    ? '支持 NetCDF（.nc、_nc、.netcdf 等）与 HDF5（.h5、_h5、.hdf5、.he5 等）格式，文件后缀不标准也可尝试打开，自动识别真实内容'
-    : acceptFormats.includes('.h5')
-      ? '支持 HDF5（.h5、_h5、.hdf5、.he5 等）与 NetCDF（.nc、_nc、.netcdf 等）格式，自动按内容识别，后缀不标准也能打开'
-      : `推荐格式：${formatLabel}（自动识别内容，后缀不标准也可尝试）`;
+  const onClick = () => inputRef.current?.click();
 
   return (
-    <Box>
+    <Flex direction="column" gap="3">
       <Box
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
+        onClick={onClick}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
         style={{
+          cursor: isParsing ? 'wait' : 'pointer',
+          borderRadius: '16px',
+          border: `2px dashed ${isDragging ? 'var(--accent-primary)' : 'var(--border-medium)'}`,
+          background: isDragging
+            ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.06), rgba(139, 92, 246, 0.04))'
+            : 'var(--bg-card)',
+          padding: '40px 24px',
+          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'relative',
           overflow: 'hidden',
-          borderRadius: '20px',
-          background: dragging
-            ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(139, 92, 246, 0.06) 100%)'
-            : 'var(--bg-glass)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: `2px ${dragging ? 'solid' : 'dashed'} ${dragging ? 'rgba(34, 211, 238, 0.6)' : 'var(--border-medium)'}`,
-          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxShadow: dragging
-            ? '0 0 60px rgba(34, 211, 238, 0.15), 0 20px 60px rgba(0, 0, 0, 0.4)'
-            : '0 8px 32px rgba(0, 0, 0, 0.25)',
         }}
-        className={dragging ? 'animate-border-glow' : ''}
       >
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: dragging
-              ? 'radial-gradient(ellipse at 50% 0%, rgba(34, 211, 238, 0.12) 0%, transparent 50%)'
-              : 'radial-gradient(ellipse at 50% 0%, rgba(148, 163, 184, 0.04) 0%, transparent 50%)',
-            pointerEvents: 'none',
-            transition: 'all 0.4s ease',
-          }}
-        />
-
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: dragging ? 0.08 : 0.03,
-            backgroundImage:
-              'linear-gradient(rgba(148, 163, 184, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.5) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-            pointerEvents: 'none',
-            transition: 'opacity 0.4s ease',
-          }}
-        />
-
-        <input
-          type="file"
-          accept={`${acceptFormats},*/*`}
-          onChange={handleFile}
-          style={{ display: 'none' }}
-          id={inputId}
-          disabled={loading}
-        />
-
-        <label
-          htmlFor={inputId}
-          style={{
-            cursor: loading ? 'progress' : 'pointer',
-            display: 'block',
-            padding: '64px 40px',
-            position: 'relative',
-          }}
-        >
-          <Flex
-            direction="column"
-            align="center"
-            gap="5"
+        {isDragging && (
+          <Box
             style={{
-              position: 'relative',
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(circle at center, rgba(34, 211, 238, 0.08), transparent 70%)',
               pointerEvents: 'none',
             }}
+          />
+        )}
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept={acceptFormats}
+          onChange={onChange}
+          style={{ display: 'none' }}
+        />
+
+        <Flex direction="column" gap="4" align="center" style={{ position: 'relative', zIndex: 1 }}>
+          <Flex
+            justify="center"
+            align="center"
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
+              background: isParsing
+                ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(139, 92, 246, 0.15))'
+                : 'var(--bg-tertiary)',
+              border: '1px solid var(--border-subtle)',
+              transition: 'all 0.25s ease',
+              animation: isParsing ? 'pulse 2s ease-in-out infinite' : undefined,
+            }}
           >
-            <Box
+            {isParsing ? (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+                <circle cx="12" cy="12" r="10" stroke="var(--accent-primary)" strokeWidth="2.5" opacity="0.25" />
+                <path d="M12 2a10 10 0 0110 10" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            )}
+          </Flex>
+
+          <Flex direction="column" gap="1" align="center">
+            <Text
+              size="4"
+              weight="medium"
               style={{
-                position: 'relative',
-                width: '80px',
-                height: '80px',
-                borderRadius: '24px',
-                background: loading
-                  ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(139, 92, 246, 0.15))'
-                  : dragging
-                  ? 'linear-gradient(135deg, rgba(34, 211, 238, 0.25), rgba(139, 92, 246, 0.2))'
-                  : 'var(--bg-tertiary)',
-                border: `1.5px solid ${dragging || loading ? 'rgba(34, 211, 238, 0.4)' : 'var(--border-subtle)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                transform: dragging ? 'scale(1.08) translateY(-4px)' : 'scale(1)',
-                boxShadow: dragging || loading
-                  ? '0 8px 32px rgba(34, 211, 238, 0.2)'
-                  : '0 4px 16px rgba(0, 0, 0, 0.3)',
+                color: isParsing ? 'var(--accent-primary)' : 'var(--text-primary)',
+                fontFamily: 'var(--font-display)',
+                letterSpacing: '-0.01em',
               }}
-              className={!loading && !dragging ? 'animate-float' : ''}
             >
-              {loading ? (
-                <Box
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    border: '3px solid rgba(34, 211, 238, 0.2)',
-                    borderTopColor: 'var(--accent-primary)',
-                    borderRightColor: 'var(--accent-secondary)',
-                    animation: 'spin 0.8s linear infinite',
-                  }}
-                />
-              ) : dragging ? (
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="url(#drg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <defs>
-                    <linearGradient id="drg" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#22d3ee" />
-                      <stop offset="100%" stopColor="#8b5cf6" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 5v14M19 12l-7 7-7-7" />
-                </svg>
-              ) : (
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17,8 12,3 7,8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-              )}
-            </Box>
+              {isParsing ? t('upload.parsing') : t('upload.primary')}
+            </Text>
+            <Text
+              size="2"
+              style={{
+                color: 'var(--text-secondary)',
+                lineHeight: 1.7,
+              }}
+            >
+              {t('upload.secondary')}
+            </Text>
+          </Flex>
 
-            <Flex direction="column" gap="2" align="center">
-              <Text
-                size="5"
-                weight="bold"
-                style={{
-                  color: dragging ? 'var(--accent-primary)' : loading ? 'var(--accent-secondary)' : 'var(--text-primary)',
-                  fontFamily: 'var(--font-display)',
-                  letterSpacing: '-0.01em',
-                  transition: 'color 0.3s ease',
-                }}
-              >
-                {loading
-                  ? '正在解析数据文件...'
-                  : dragging
-                  ? '释放以开始上传'
-                  : '点击选择文件或拖拽到此处'}
-              </Text>
-              <Text
-                size="3"
-                style={{
-                  color: 'var(--text-tertiary)',
-                  lineHeight: 1.6,
-                  textAlign: 'center',
-                  maxWidth: '560px',
-                }}
-              >
-                {loading
-                  ? '请稍候，正在读取文件内容和元数据'
-                  : friendlyFormatDesc}
-              </Text>
-            </Flex>
-
-            <Flex gap="3" align="center" style={{ marginTop: '8px' }}>
-              <Box
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
-                  borderRadius: '999px',
-                  background: loading
-                    ? 'rgba(139, 92, 246, 0.08)'
-                    : 'rgba(16, 185, 129, 0.06)',
-                  border: `1px solid ${loading ? 'rgba(139, 92, 246, 0.2)' : 'rgba(16, 185, 129, 0.15)'}`,
-                }}
-              >
-                {loading ? (
-                  <span
-                    className="data-dot"
-                    style={{
-                      width: '6px',
-                      height: '6px',
-                      background: 'var(--accent-violet)',
-                      boxShadow: '0 0 12px var(--accent-violet)',
-                    }}
-                  />
-                ) : (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke={dragging ? 'var(--accent-primary)' : 'var(--accent-emerald)'}
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    {dragging ? (
-                      <path d="M5 12h14M12 5v14" />
-                    ) : (
-                      <path d="M20 6L9 17l-5-5" />
-                    )}
-                  </svg>
-                )}
-                <Text
-                  size="2"
+          <Flex gap="2" wrap="wrap" justify="center" mt="2">
+            {(acceptFormats || '.nc,.netcdf,.h5,.hdf5,.hdf,.he5')
+              .split(',')
+              .filter(Boolean)
+              .map(fmt => (
+                <Badge
+                  key={fmt}
+                  size="1"
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: loading ? 'var(--accent-violet)' : dragging ? 'var(--accent-primary)' : 'var(--accent-emerald)',
+                    background: 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-subtle)',
+                    color: 'var(--text-secondary)',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
                   }}
                 >
-                  {loading ? '解析中...' : dragging ? '准备就绪' : '本地处理，数据安全'}
-                </Text>
-              </Box>
-            </Flex>
+                  {fmt}
+                </Badge>
+              ))}
           </Flex>
-        </label>
+        </Flex>
       </Box>
 
       {error && (
-        <Callout.Root
-          color="red"
+        <Flex
+          gap="3"
           style={{
-            marginTop: '24px',
-            borderRadius: '14px',
-            padding: '16px 20px',
-            background: 'rgba(239, 68, 68, 0.06)',
-            backdropFilter: 'blur(8px)',
+            padding: '14px 16px',
+            borderRadius: '12px',
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            animation: 'shake 0.4s ease-in-out',
           }}
         >
-          <Flex gap="3" align="start">
-            <Box
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '10px',
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(239, 68, 68, 0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-            </Box>
-            <Flex direction="column" gap="1">
-              <Text size="3" weight="medium" style={{ color: 'rgba(254, 202, 202, 0.95)' }}>
-                文件解析失败
-              </Text>
-              <Callout.Text style={{ color: 'rgba(252, 165, 165, 0.8)', lineHeight: 1.6 }}>
-                {error}
-              </Callout.Text>
-            </Flex>
-          </Flex>
-        </Callout.Root>
+          <Box
+            style={{
+              width: '20px',
+              height: '20px',
+              flexShrink: 0,
+              borderRadius: '999px',
+              background: 'rgba(239, 68, 68, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--accent-red)',
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+          </Box>
+          <Text size="2" style={{ color: 'var(--accent-red)', lineHeight: 1.6 }}>
+            {error}
+          </Text>
+        </Flex>
       )}
 
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </Box>
+      <Flex justify="center">
+        <Text
+          size="1"
+          style={{
+            color: 'var(--text-tertiary)',
+            fontFamily: 'var(--font-mono)',
+          }}
+        >
+          {t('upload.sizeLimit', { size: formatFileSize(256 * 1024 * 1024) })}
+        </Text>
+      </Flex>
+    </Flex>
   );
 }
