@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const SITE_URL = "https://sci.spaceroute.cn";
@@ -221,7 +222,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <AppProviders>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AppProviders>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}

@@ -5,6 +5,7 @@ import { Box, Card, Flex, Text, Heading, Code, Badge } from '@radix-ui/themes';
 import { FileInfo, Attribute, Variable } from '@/lib/parsers';
 import DataVisualizer from './DataVisualizer';
 import { truncateForPreview } from '@/lib/downsample';
+import { useI18n } from '@/lib/i18n';
 
 function SectionHeader({ icon, title, count, accent = 'cyan' }: { icon: React.ReactNode; title: string; count?: number; accent?: 'cyan' | 'violet' | 'emerald' }) {
   const accentColors = {
@@ -75,6 +76,7 @@ function SectionHeader({ icon, title, count, accent = 'cyan' }: { icon: React.Re
 }
 
 function AttributeList({ attributes }: { attributes: Attribute[] }) {
+  const { t } = useI18n();
   if (attributes.length === 0) {
     return (
       <Text
@@ -85,7 +87,7 @@ function AttributeList({ attributes }: { attributes: Attribute[] }) {
           fontFamily: 'var(--font-mono)',
         }}
       >
-        无属性
+        {t('viewer.noAttributes')}
       </Text>
     );
   }
@@ -138,6 +140,7 @@ function AttributeList({ attributes }: { attributes: Attribute[] }) {
 
 function VariableCard({ variable, index }: { variable: Variable; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const { t, formatLocale } = useI18n();
   const dimCount = variable.shape.filter(s => s > 0).length || 1;
   // 计算 shape 乘积（总元素数），超大数组就只展示截断预览
   const totalElems = variable.shape.length > 0 && variable.shape.every(s => s > 0)
@@ -312,7 +315,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                     fontSize: '11px',
                   }}
                 >
-                  维度 / Dimensions
+                  {t('viewer.dimensions')}
                 </Text>
               </Flex>
               <Box
@@ -331,7 +334,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                     lineHeight: 1.6,
                   }}
                 >
-                  {variable.dimensions.join(', ') || '标量 (Scalar)'}
+                  {variable.dimensions.join(', ') || t('viewer.scalar')}
                 </Text>
               </Box>
             </Flex>
@@ -359,8 +362,8 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                       fontSize: '11px',
                     }}
                   >
-                    属性 / Attributes
-                  </Text>
+                      {t('viewer.attributes')}
+                    </Text>
                 </Flex>
                 <AttributeList attributes={variable.attributes} />
               </Flex>
@@ -390,7 +393,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                         fontSize: '11px',
                       }}
                     >
-                      数据预览 / Data Preview
+                      {t('viewer.dataPreview')}
                     </Text>
                   </Flex>
                   <Flex gap="2" align="center" wrap="wrap">
@@ -416,7 +419,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                         borderRadius: '6px',
                       }}
                     >
-                      {totalElems.toLocaleString()} items
+                      {formatLocale(totalElems)} items
                     </Badge>
                     {preview?.truncated && (
                       <Badge
@@ -429,7 +432,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
                           borderRadius: '6px',
                         }}
                       >
-                        已截断（仅展示前 {preview.shownCount.toLocaleString()}）
+                        {t('viewer.truncated', { count: formatLocale(preview.shownCount) })}
                       </Badge>
                     )}
                   </Flex>
@@ -474,6 +477,7 @@ function VariableCard({ variable, index }: { variable: Variable; index: number }
 }
 
 export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
+  const { t } = useI18n();
   return (
     <Flex gap="6" direction="column" style={{ display: 'grid', gridTemplateColumns: '340px 1fr' }}>
       {/* 左侧面板 */}
@@ -524,7 +528,7 @@ export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
                     letterSpacing: '0.05em',
                   }}
                 >
-                  文件格式
+                  {t('viewer.fileFormat')}
                 </Text>
                 <Heading
                   size="5"
@@ -556,7 +560,7 @@ export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
             }
-            title="全局属性"
+            title={t('viewer.globalAttrs')}
             count={fileInfo.globalAttributes.length}
             accent="cyan"
           />
@@ -579,7 +583,7 @@ export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
                 <rect x="3" y="14" width="7" height="7" />
               </svg>
             }
-            title="维度"
+            title={t('viewer.dimensions')}
             count={fileInfo.dimensions.length}
             accent="violet"
           />
@@ -659,7 +663,7 @@ export default function FileViewer({ fileInfo }: { fileInfo: FileInfo }) {
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
             }
-            title="变量"
+            title={t('viewer.variables')}
             count={fileInfo.variables.length}
             accent="emerald"
           />

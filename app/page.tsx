@@ -1,75 +1,89 @@
 'use client';
 
-import { Container, Heading, Text, Flex, Box, Card, Grid, Badge, Button } from '@radix-ui/themes';
+import { Container, Heading, Text, Flex, Box, Card, Grid, Badge } from '@radix-ui/themes';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-const tools = [
-  {
-    name: 'NetCDF Viewer',
-    description: '探索 NetCDF 格式的多维科学数据，查看元数据、维度信息与变量结构，支持即时数据可视化',
-    href: '/netcdf',
-    tag: '.nc / .netcdf',
-    gradient: 'cyan',
-    features: ['多维数据解析', '元数据浏览', '变量预览', '图表可视化'],
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
-        <defs>
-          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0891b2" />
-          </linearGradient>
-        </defs>
-        <rect x="4" y="8" width="40" height="32" rx="4" fill="url(#g1)" opacity="0.15" />
-        <rect x="4" y="8" width="40" height="32" rx="4" stroke="url(#g1)" strokeWidth="1.5" />
-        <path d="M10 20 L20 30 L28 22 L38 34" stroke="url(#g1)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="10" cy="20" r="2" fill="url(#g1)" />
-        <circle cx="20" cy="30" r="2" fill="url(#g1)" />
-        <circle cx="28" cy="22" r="2" fill="url(#g1)" />
-        <circle cx="38" cy="34" r="2" fill="url(#g1)" />
-        <line x1="8" y1="38" x2="40" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
-        <line x1="8" y1="14" x2="8" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
-      </svg>
-    )
-  },
-  {
-    name: 'HDF5 Viewer',
-    description: '深入查看 HDF5 层级数据结构，浏览数据集、组属性与层级关系，快速定位感兴趣的数据片段',
-    href: '/hdf5',
-    tag: '.h5 / .hdf5 / .he5',
-    gradient: 'violet',
-    features: ['层级树结构', '数据集浏览', '属性管理', '多维可视化'],
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
-        <defs>
-          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#8b5cf6" />
-            <stop offset="100%" stopColor="#6366f1" />
-          </linearGradient>
-        </defs>
-        <rect x="6" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.2" />
-        <rect x="6" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1.5" />
-        <rect x="24" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.15" />
-        <rect x="24" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.6" />
-        <rect x="6" y="28" width="18" height="14" rx="3" fill="url(#g2)" opacity="0.1" />
-        <rect x="6" y="28" width="18" height="14" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.5" />
-        <rect x="28" y="30" width="14" height="12" rx="2" fill="url(#g2)" opacity="0.25" />
-        <rect x="28" y="30" width="14" height="12" rx="2" stroke="url(#g2)" strokeWidth="1.5" />
-        <path d="M15 12 L15 18 M12 15 L18 15" stroke="url(#g2)" strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="35" cy="36" r="2.5" fill="none" stroke="url(#g2)" strokeWidth="1.5" />
-      </svg>
-    )
-  }
-];
-
-const stats = [
-  { label: '支持格式', value: '6+', sub: 'NetCDF, HDF5 等' },
-  { label: '数据维度', value: '1-4D', sub: '多维数组解析' },
-  { label: '可视化', value: '实时', sub: '图表即时渲染' },
-  { label: '运行方式', value: '本地', sub: '数据永不离开' },
-];
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useI18n } from '@/lib/i18n';
 
 export default function Home() {
+  const { t } = useI18n();
+
+  const tools = [
+    {
+      name: t('tools.netcdfName'),
+      description: t('tools.netcdfDesc'),
+      href: '/netcdf',
+      tag: '.nc / .netcdf',
+      gradient: 'cyan',
+      features: [
+        t('tools.netcdfFeat1'),
+        t('tools.netcdfFeat2'),
+        t('tools.netcdfFeat3'),
+        t('tools.netcdfFeat4'),
+      ],
+      icon: (
+        <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#22d3ee" />
+              <stop offset="100%" stopColor="#0891b2" />
+            </linearGradient>
+          </defs>
+          <rect x="4" y="8" width="40" height="32" rx="4" fill="url(#g1)" opacity="0.15" />
+          <rect x="4" y="8" width="40" height="32" rx="4" stroke="url(#g1)" strokeWidth="1.5" />
+          <path d="M10 20 L20 30 L28 22 L38 34" stroke="url(#g1)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="10" cy="20" r="2" fill="url(#g1)" />
+          <circle cx="20" cy="30" r="2" fill="url(#g1)" />
+          <circle cx="28" cy="22" r="2" fill="url(#g1)" />
+          <circle cx="38" cy="34" r="2" fill="url(#g1)" />
+          <line x1="8" y1="38" x2="40" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
+          <line x1="8" y1="14" x2="8" y2="38" stroke="url(#g1)" strokeWidth="1" opacity="0.5" />
+        </svg>
+      )
+    },
+    {
+      name: t('tools.hdf5Name'),
+      description: t('tools.hdf5Desc'),
+      href: '/hdf5',
+      tag: '.h5 / .hdf5 / .he5',
+      gradient: 'violet',
+      features: [
+        t('tools.hdf5Feat1'),
+        t('tools.hdf5Feat2'),
+        t('tools.hdf5Feat3'),
+        t('tools.hdf5Feat4'),
+      ],
+      icon: (
+        <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+          <defs>
+            <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="100%" stopColor="#6366f1" />
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.2" />
+          <rect x="6" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1.5" />
+          <rect x="24" y="6" width="18" height="18" rx="3" fill="url(#g2)" opacity="0.15" />
+          <rect x="24" y="6" width="18" height="18" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.6" />
+          <rect x="6" y="28" width="18" height="14" rx="3" fill="url(#g2)" opacity="0.1" />
+          <rect x="6" y="28" width="18" height="14" rx="3" stroke="url(#g2)" strokeWidth="1" opacity="0.5" />
+          <rect x="28" y="30" width="14" height="12" rx="2" fill="url(#g2)" opacity="0.25" />
+          <rect x="28" y="30" width="14" height="12" rx="2" stroke="url(#g2)" strokeWidth="1.5" />
+          <path d="M15 12 L15 18 M12 15 L18 15" stroke="url(#g2)" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="35" cy="36" r="2.5" fill="none" stroke="url(#g2)" strokeWidth="1.5" />
+        </svg>
+      )
+    }
+  ];
+
+  const stats = [
+    { label: t('home.statFormatsLabel'), value: '6+', sub: t('home.statFormatsSub') },
+    { label: t('home.statDimLabel'), value: '1-4D', sub: t('home.statDimSub') },
+    { label: t('home.statVizLabel'), value: '↯', sub: t('home.statVizSub') },
+    { label: t('home.statRunLabel'), value: '◉', sub: t('home.statRunSub') },
+  ];
+
   return (
     <Box style={{ minHeight: '100vh' }}>
       {/* 顶部装饰条 */}
@@ -87,8 +101,9 @@ export default function Home() {
       />
 
       <Container size="3" p="8" style={{ paddingTop: '40px', paddingBottom: '120px' }}>
-        {/* 顶部主题切换 */}
-        <Flex justify="end" align="center" className="animate-slide-up" style={{ marginBottom: '40px' }}>
+        {/* 顶部主题/语言切换 */}
+        <Flex justify="end" align="center" gap="3" className="animate-slide-up" style={{ marginBottom: '40px' }}>
+          <LanguageSwitcher />
           <ThemeToggle />
         </Flex>
 
@@ -112,7 +127,7 @@ export default function Home() {
                   letterSpacing: '0.02em',
                 }}
               >
-                v1.0 / SCIENTIFIC DATA
+                {t('home.badge')}
               </Badge>
             </Flex>
 
@@ -130,10 +145,10 @@ export default function Home() {
                 margin: '0 auto',
               }}
             >
-              <span>科学数据</span>
-              <span className="gradient-text"> 可视化</span>
+              <span>{t('home.heroTitlePart1')}</span>
+              <span className="gradient-text"> {t('home.heroTitlePart2')}</span>
               <br />
-              <span style={{ color: 'var(--text-secondary)' }}>探索与洞察</span>
+              <span style={{ color: 'var(--text-secondary)' }}>{t('home.heroTitleSub')}</span>
             </Heading>
 
             {/* 副标题 */}
@@ -143,13 +158,12 @@ export default function Home() {
               className="animate-slide-up stagger-4"
               style={{
                 color: 'var(--text-secondary)',
-                maxWidth: '600px',
+                maxWidth: '680px',
                 lineHeight: 1.7,
                 fontWeight: 300,
               }}
             >
-              专业的 NetCDF 与 HDF5 文件查看工具，浏览器端即时解析多维科学数据，
-              无需上传服务器，本地安全查看，支持丰富的图表可视化。
+              {t('home.heroSubtitle')}
             </Text>
 
             {/* CTA 装饰元素 */}
@@ -177,7 +191,7 @@ export default function Home() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
-                100% 本地处理
+                {t('home.ctaLocal')}
               </Box>
               <Box
                 style={{
@@ -197,7 +211,7 @@ export default function Home() {
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <path d="M3 9h18M9 21V9" />
                 </svg>
-                多维可视化
+                {t('home.ctaMultiDim')}
               </Box>
             </Flex>
           </Flex>
@@ -315,7 +329,7 @@ export default function Home() {
                     {/* 底部 CTA */}
                     <Flex justify="between" align="center" style={{ paddingTop: '16px', marginTop: '8px', borderTop: '1px solid var(--border-subtle)' }}>
                       <Text size="2" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
-                        点击进入 →
+                        {t('common.clickToEnter')}
                       </Text>
                       <Box
                         style={{
@@ -375,7 +389,7 @@ export default function Home() {
                   textTransform: 'uppercase',
                 }}
               >
-                // 核心特性
+                {t('home.coreFeatures')}
               </Text>
               <Heading
                 size="5"
@@ -385,7 +399,7 @@ export default function Home() {
                   color: 'var(--text-primary)',
                 }}
               >
-                为科研工作流而生
+                {t('home.builtForResearch')}
               </Heading>
             </Flex>
 
@@ -433,7 +447,7 @@ export default function Home() {
         <Flex direction="column" gap="3" align="center" className="animate-slide-up stagger-6">
           <Flex gap="3" align="center" style={{ opacity: 0.6 }}>
             <Text size="2" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
-              Powered by
+              {t('home.poweredBy')}
             </Text>
             <Flex gap="4" align="center">
               <Text size="2" weight="medium" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
@@ -450,7 +464,7 @@ export default function Home() {
             </Flex>
           </Flex>
           <Text size="1" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', opacity: 0.7 }}>
-            NCView © 2025 — 在浏览器中探索科学数据的无限可能
+            {t('home.footerCopyright')}
           </Text>
         </Flex>
       </Container>
@@ -497,7 +511,7 @@ export default function Home() {
                 "softwareVersion": "1.0.0",
                 "description":
                   "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
-                "inLanguage": ["zh-CN", "en"],
+                "inLanguage": ["zh-CN", "en", "es"],
                 "offers": [
                   {
                     "@type": "Offer",
@@ -517,8 +531,9 @@ export default function Home() {
                   "NetCDF 在线查看：支持 .nc / .netcdf / _nc / 压缩后缀，Magic Bytes 真实格式识别",
                   "HDF5 在线查看：基于 h5wasm，支持 .h5 / .hdf5 / .he5 层级结构浏览",
                   "100% 浏览器端本地解析：数据永不离开设备，彻底保障科研数据隐私",
-                  "多维图表可视化：基于 ECharts，即时渲染 1D~4D 科学数据的线图/热力图/散点图",
+                  "多维图表可视化：基于 ECharts，即时渲染 1D~4D 科学数据的线图/热力图/散点图/等高线",
                   "深色/浅色/自动 三档主题切换，专业的沉浸式科研视觉",
+                  "中英西三语国际化：浏览器语言自动匹配，用户可手动切换并持久化",
                 ],
                 "fileFormat": [
                   "application/netcdf",
