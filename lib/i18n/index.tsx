@@ -13,31 +13,24 @@ import React, {
 import { messages as zhMessages, type Messages } from "./zh";
 import { messages as enMessages } from "./en";
 import { messages as esMessages } from "./es";
+// 共享常量：与服务器代码共用，避免重复定义不同步
+import {
+  LOCALES,
+  DEFAULT_LOCALE,
+  LOCALE_STORAGE_KEY,
+  LOCALE_META,
+  getLocaleMeta,
+  type Locale,
+} from "./shared";
 
-export type Locale = "zh" | "en" | "es";
-
-export const LOCALES: Locale[] = ["zh", "en", "es"];
-export const LOCALE_STORAGE_KEY = "ncview.locale";
-export const DEFAULT_LOCALE: Locale = "zh";
+export type { Locale } from "./shared";
+export { LOCALES, DEFAULT_LOCALE, LOCALE_STORAGE_KEY, getLocaleMeta };
 
 const LOCALE_BUNDLES: Record<Locale, Messages> = {
   zh: zhMessages,
   en: enMessages,
   es: esMessages,
 };
-
-const LOCALE_META: Record<
-  Locale,
-  { label: string; langTag: string; flagCode: string }
-> = {
-  zh: { label: "中文", langTag: "zh-CN", flagCode: "🇨🇳" },
-  en: { label: "English", langTag: "en-US", flagCode: "🇺🇸" },
-  es: { label: "Español", langTag: "es-ES", flagCode: "🇪🇸" },
-};
-
-export function getLocaleMeta(locale: Locale) {
-  return LOCALE_META[locale];
-}
 
 /** 判断浏览器偏好与 Accept-Language 映射 */
 function detectBrowserLocale(): Locale {
@@ -120,25 +113,37 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [isUserSelected, setIsUserSelected] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // 初始化：读取 localStorage 或浏览器偏好
+  // 初始化：读取 localStorage 或浏览器偏好，并同步写入 cookie
   useEffect(() => {
+    let resolved: Locale = DEFAULT_LOCALE;
+    let userSel = false;
     try {
       const stored = localStorage.getItem(LOCALE_STORAGE_KEY) as
         | Locale
         | null;
       if (stored && (LOCALES as string[]).includes(stored)) {
-        setLocaleState(stored);
-        setIsUserSelected(true);
+        resolved = stored;
+        userSel = true;
       } else {
-        const detected = detectBrowserLocale();
-        setLocaleState(detected);
-        setIsUserSelected(false);
+        resolved = detectBrowserLocale();
+        userSel = false;
       }
     } catch {
-      setLocaleState(detectBrowserLocale());
-      setIsUserSelected(false);
+      resolved = detectBrowserLocale();
+      userSel = false;
     } finally {
+      setLocaleState(resolved);
+      setIsUserSelected(userSel);
       setIsHydrated(true);
+    }
+    // 同步写入 cookie，便于 SSR / generateMetadata 读取
+    try {
+      const maxAge = 60 * 60 * 24 * 365;
+      document.cookie = `${LOCALE_STORAGE_KEY}=${encodeURIComponent(
+        resolved,
+      )}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    } catch {
+      /* ignore */
     }
   }, []);
 
@@ -169,6 +174,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     setIsUserSelected(true);
     try {
       localStorage.setItem(LOCALE_STORAGE_KEY, l);
+    } catch {
+      /* ignore */
+    }
+    // 写入 cookie（1 年过期，path=/），以便服务器端 generateMetadata / SSR 能读取
+    try {
+      const maxAge = 60 * 60 * 24 * 365;
+      document.cookie = `${LOCALE_STORAGE_KEY}=${encodeURIComponent(
+        l,
+      )}; path=/; max-age=${maxAge}; SameSite=Lax`;
     } catch {
       /* ignore */
     }
