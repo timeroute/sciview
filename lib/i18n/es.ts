@@ -2,6 +2,157 @@
 import type { Messages } from "./zh";
 
 export const messages: Messages = {
+  // ===== SEO metadata traducciones =====
+  seo: {
+    siteName: "NCView",
+    author: "NCView Team",
+    root: {
+      titleDefault: "NCView - Visor de Visualización de Datos Científicos",
+      titleTemplate: "%s · NCView",
+      titleAbsolute:
+        "NCView - Visor de Visualización de Datos Científicos | Analizador Online NetCDF y HDF5",
+      description:
+        "Visor y herramienta de visualización profesional para archivos de datos científicos NetCDF y HDF5. Analiza arrays multidimensionales y estructuras jerárquicas al instante en el navegador. Procesado local, seguro, con visualización de gráficos avanzada.",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "netcdfjs",
+        "HDF5",
+        "HDF5 Viewer",
+        "h5wasm",
+        "visor .nc",
+        "visor .h5",
+        "visualización datos científicos",
+        "analizador arrays multidimensionales",
+        "datos climáticos",
+        "datos meteorológicos",
+        "NCView",
+        "ver NetCDF online",
+        "ver HDF5 online",
+        "análisis en navegador",
+        "perspectiva de datos",
+      ],
+      ogImageAlt: "NCView - Visor de Visualización de Datos Científicos",
+    },
+    home: {
+      titleDefault:
+        "NCView - Visor de Visualización de Datos Científicos NetCDF / HDF5",
+      titleAbsolute:
+        "NCView - Visor de Visualización de Datos Científicos NetCDF / HDF5 | Análisis Local y Visualización Gráfica en Navegador",
+      description:
+        "Visor online gratuito y profesional para NetCDF y HDF5. Analiza datos científicos multidimensionales y estructuras jerárquicas al instante en tu navegador — procesado 100% local, los datos nunca abandonan tu dispositivo. Navega variables, dimensiones, atributos y crea visualizaciones gráficas avanzadas.",
+      keywords: [
+        "visor NetCDF online",
+        "visor HDF5 online",
+        "abrir archivo .nc",
+        "abrir archivo .h5",
+        "visualización datos científicos",
+        "visualización NetCDF",
+        "visualización HDF5",
+        "visor datos climáticos",
+        "arrays multidimensionales",
+        "procesado local",
+      ],
+      ogImageAlt:
+        "NCView Inicio - Herramienta de Visualización Online NetCDF y HDF5",
+      webpageName: "NCView - Visor de Visualización de Datos Científicos",
+      webpageHeadline:
+        "Visualización de datos científicos NetCDF y HDF5 en navegador",
+      breadcrumbHome: "Inicio",
+    },
+    netcdf: {
+      titleDefault:
+        "NetCDF Viewer - Analiza Datos Científicos Multidimensionales Online",
+      titleAbsolute:
+        "Visor NetCDF Online | Analizador y Visualizador de Arrays Multidimensionales · NCView",
+      description:
+        "Visor NetCDF online gratuito. Analiza al instante archivos .nc / .netcdf / _nc en tu navegador. Ábrelos de forma segura en tu dispositivo. Navega variables, dimensiones y atributos con visualización de gráficos — no requiere subir a ningún servidor.",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "ver NetCDF online",
+        "visor archivos .nc",
+        "abrir .nc online",
+        "netcdfjs",
+        "datos climáticos",
+        "datos meteorológicos",
+        "datos oceánicos",
+        "arrays multidimensionales",
+        "netCDF4",
+        "NetCDF Classic",
+        "visualización datos científicos",
+      ],
+      ogImageAlt: "Visor NetCDF Online - NCView",
+    },
+    hdf5: {
+      titleDefault:
+        "HDF5 Viewer - Navega Datasets Jerárquicos Online",
+      titleAbsolute:
+        "Visor HDF5 Online | Analizador y Visualizador de Datasets Jerárquicos · NCView",
+      description:
+        "Visor HDF5 online gratuito. Usa h5wasm para analizar formatos jerárquicos como .h5 / .hdf5 / .hdf / .he5 localmente en tu navegador. Navega datasets, grupos, atributos y crea visualizaciones multidimensionales — los archivos nunca abandonan tu dispositivo.",
+      keywords: [
+        "HDF5",
+        "HDF5 Viewer",
+        "ver HDF5 online",
+        "visor archivos .h5",
+        "abrir .h5 online",
+        "h5wasm",
+        "estructura jerárquica HDF5",
+        "datasets HDF5",
+        ".he5",
+        "HDF-EOS",
+        "visualización datos científicos",
+        "arrays multidimensionales",
+        "Formato de Datos Jerárquico",
+      ],
+      ogImageAlt: "Visor HDF5 Online - NCView",
+    },
+    jsonLd: {
+      websiteAlternateName: "NCView - Visor de Visualización de Datos Científicos",
+      websiteSearchDescription:
+        "Visor y herramienta de visualización profesional para archivos de datos científicos NetCDF y HDF5. Analiza arrays multidimensionales y estructuras jerárquicas al instante en el navegador. Procesado local, seguro, con visualización de gráficos avanzada.",
+      webAppAlternateName: "NCView - Herramienta de Visualización NetCDF / HDF5",
+      webAppSubCategory: "Herramienta de Visualización de Datos Científicos",
+      webAppOperatingSystem: "Cualquiera (Navegador Web)",
+      webAppBrowserRequirements:
+        "Navegador moderno con soporte WebAssembly",
+      webAppDescription:
+        "Visor y herramienta de visualización profesional para archivos de datos científicos NetCDF y HDF5. Analiza arrays multidimensionales y estructuras jerárquicas al instante en el navegador. Procesado local, seguro, con visualización de gráficos avanzada.",
+      webAppFeatureList: [
+        "Visor NetCDF online: soporta .nc / .netcdf / _nc / sufijos comprimidos, detección real de contenido por Magic Bytes",
+        "Visor HDF5 online: impulsado por h5wasm, navega estructuras jerárquicas .h5 / .hdf5 / .he5",
+        "Análisis 100% local en navegador: los datos nunca abandonan tu dispositivo, protege totalmente la privacidad de datos de investigación",
+        "Visualización de gráficos multidimensionales: impulsado por ECharts, renderiza al instante gráficos de líneas/mapa de calor/dispersión/contorno para datos científicos 1D~4D",
+        "Tres modos de tema (Claro / Oscuro / Auto) con aspecto profesional e inmersivo para la investigación",
+        "Internacionalización trilingüe (Chino / Inglés / Español): detecta automáticamente el idioma del navegador con selección manual y persistencia",
+      ],
+      // NetCDF page SoftwareApplication JSON-LD
+      netcdfSoftwareName: "NetCDF Viewer by NCView",
+      netcdfSoftwareAltName: "Visor NetCDF Online",
+      netcdfReleaseNotes:
+        "Soporta análisis de formatos NetCDF Classic, NetCDF-64bit offset, NetCDF4/HDF5; explora variables, dimensiones, atributos y metadatos globales con visualizaciones gráficas multidimensionales.",
+      netcdfFeatureList: [
+        "Análisis local en navegador (datos nunca subidos a servidor — privacidad y seguridad)",
+        "Soporta convenciones de nombres .nc / .netcdf / _nc con detección real por Magic Bytes",
+        "Explora variables, dimensiones y metadatos de atributos globales y por variable",
+        "Visualización de arrays multidimensionales (1D~4D) impulsada por ECharts",
+      ],
+      netcdfBreadcrumbItemName: "Visor NetCDF Online",
+      // HDF5 page SoftwareApplication JSON-LD
+      hdf5SoftwareName: "HDF5 Viewer by NCView",
+      hdf5SoftwareAltName: "Visor HDF5 Online",
+      hdf5ReleaseNotes:
+        "Análisis HDF5 en navegador impulsado por h5wasm; soporta formatos .h5/.hdf5/.hdf/.he5; explora árboles grupos/datasets/atributos y renderiza visualizaciones multidimensionales.",
+      hdf5FeatureList: [
+        "Análisis HDF5 en navegador usando h5wasm (datos nunca subidos a servidor — privacidad y seguridad)",
+        "Soporta convenciones de nombres .h5 / .hdf5 / .hdf / .he5 con detección real por Magic Bytes",
+        "Navegación por árbol jerárquico: estructura completa Grupo / Dataset / Atributo",
+        "Visualización de datasets multidimensionales y vista previa por cortes (impulsada por ECharts)",
+      ],
+      hdf5BreadcrumbItemName: "Visor HDF5 Online",
+    },
+  },
   common: {
     ready: "Listo",
     loading: "Analizando...",

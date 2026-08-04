@@ -1,5 +1,154 @@
 // 中文（简体）语言包
 export const messages = {
+  // ===== SEO 元数据翻译（title/description/keywords/JSON-LD）=====
+  seo: {
+    siteName: "NCView",
+    author: "NCView Team",
+    // 根 layout 全局
+    root: {
+      titleDefault: "NCView - 科学数据可视化查看器",
+      titleTemplate: "%s · NCView",
+      titleAbsolute: "NCView - 科学数据可视化查看器 | NetCDF 与 HDF5 在线解析",
+      description:
+        "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "netcdfjs",
+        "HDF5",
+        "HDF5 Viewer",
+        "h5wasm",
+        ".nc 查看器",
+        ".h5 查看器",
+        "科学数据可视化",
+        "多维数组解析",
+        "气候数据",
+        "气象数据",
+        "NCView",
+        "在线查看 NetCDF",
+        "在线查看 HDF5",
+        "浏览器端解析",
+        "数据洞察",
+      ],
+      ogImageAlt: "NCView - 科学数据可视化查看器",
+    },
+    // 首页
+    home: {
+      titleDefault: "NCView - NetCDF / HDF5 科学数据可视化查看器",
+      titleAbsolute:
+        "NCView - NetCDF / HDF5 科学数据可视化查看器 | 浏览器端本地解析与图表可视化",
+      description:
+        "免费专业的 NetCDF 与 HDF5 在线查看器，浏览器端即时解析多维科学数据与层级结构，100% 本地处理不离开设备，支持变量/维度/属性浏览与图表可视化。",
+      keywords: [
+        "NetCDF 在线查看器",
+        "HDF5 在线查看器",
+        ".nc 打开",
+        ".h5 打开",
+        "科学数据可视化",
+        "NetCDF 可视化",
+        "HDF5 可视化",
+        "气候数据查看",
+        "多维数组",
+        "本地解析",
+      ],
+      ogImageAlt: "NCView 首页 - NetCDF 与 HDF5 在线可视化工具",
+      webpageName: "NCView - 科学数据可视化查看器",
+      webpageHeadline: "NetCDF 与 HDF5 浏览器端科学数据可视化",
+      breadcrumbHome: "首页",
+    },
+    // NetCDF 页面
+    netcdf: {
+      titleDefault: "NetCDF Viewer - 在线解析多维科学数据",
+      titleAbsolute:
+        "NetCDF 在线查看器 | 多维数组解析与可视化 · NCView",
+      description:
+        "免费的 NetCDF 在线查看器，浏览器端即时解析 .nc / .netcdf / _nc 等格式文件，本地安全打开，支持查看变量、维度、属性并进行图表可视化，无需上传服务器。",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "在线查看 NetCDF",
+        ".nc 文件查看器",
+        ".nc 在线打开",
+        "netcdfjs",
+        "气候数据",
+        "气象数据",
+        "海洋数据",
+        "多维数组",
+        "netCDF4",
+        "NetCDF Classic",
+        "科学数据可视化",
+      ],
+      ogImageAlt: "NetCDF 在线查看器 - NCView",
+    },
+    // HDF5 页面
+    hdf5: {
+      titleDefault: "HDF5 Viewer - 在线浏览层级数据集",
+      titleAbsolute:
+        "HDF5 在线查看器 | 层级数据集解析与可视化 · NCView",
+      description:
+        "免费的 HDF5 在线查看器，本地浏览器端使用 h5wasm 解析 .h5 / .hdf5 / .hdf / .he5 等层级格式，浏览数据集、组结构、属性树并进行多维可视化，文件永远不离开您的设备。",
+      keywords: [
+        "HDF5",
+        "HDF5 Viewer",
+        "在线查看 HDF5",
+        ".h5 文件查看器",
+        ".h5 在线打开",
+        "h5wasm",
+        "HDF5 层级结构",
+        "HDF5 数据集",
+        ".he5",
+        "HDF-EOS",
+        "科学数据可视化",
+        "多维数组",
+        "Hierarchical Data Format",
+      ],
+      ogImageAlt: "HDF5 在线查看器 - NCView",
+    },
+    // JSON-LD
+    jsonLd: {
+      websiteAlternateName: "NCView - 科学数据可视化查看器",
+      websiteSearchDescription:
+        "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
+      webAppAlternateName: "NCView - NetCDF / HDF5 可视化工具",
+      webAppSubCategory: "科学数据可视化工具",
+      webAppOperatingSystem: "任何（Web 浏览器）",
+      webAppBrowserRequirements: "支持 WebAssembly 的现代浏览器",
+      webAppDescription:
+        "专业的 NetCDF 与 HDF5 科学数据文件查看与可视化工具，在浏览器端即时解析多维数组与层级结构，本地安全处理，支持丰富图表可视化。",
+      webAppFeatureList: [
+        "NetCDF 在线查看：支持 .nc / .netcdf / _nc / 压缩后缀，Magic Bytes 真实格式识别",
+        "HDF5 在线查看：基于 h5wasm，支持 .h5 / .hdf5 / .he5 层级结构浏览",
+        "100% 浏览器端本地解析：数据永不离开设备，彻底保障科研数据隐私",
+        "多维图表可视化：基于 ECharts，即时渲染 1D~4D 科学数据的线图/热力图/散点图/等高线",
+        "深色/浅色/自动 三档主题切换，专业的沉浸式科研视觉",
+        "中英西三语国际化：浏览器语言自动匹配，用户可手动切换并持久化",
+      ],
+      // NetCDF 页面 SoftwareApplication JSON-LD
+      netcdfSoftwareName: "NetCDF Viewer by NCView",
+      netcdfSoftwareAltName: "NetCDF 在线查看器",
+      netcdfReleaseNotes:
+        "支持 NetCDF Classic、NetCDF-64bit offset、NetCDF4/HDF5 格式解析；提供变量、维度、属性、全局元数据浏览与多维图表可视化。",
+      netcdfFeatureList: [
+        "浏览器端本地解析（数据不上传服务器，隐私安全）",
+        "支持 .nc / .netcdf / _nc 等多种命名方式及 Magic Bytes 识别",
+        "浏览变量、维度、全局/变量级属性元数据",
+        "1D~4D 多维数组图表可视化（基于 ECharts）",
+      ],
+      netcdfBreadcrumbItemName: "NetCDF 在线查看器",
+      // HDF5 页面 SoftwareApplication JSON-LD
+      hdf5SoftwareName: "HDF5 Viewer by NCView",
+      hdf5SoftwareAltName: "HDF5 在线查看器",
+      hdf5ReleaseNotes:
+        "基于 h5wasm 实现浏览器端 HDF5 解析，支持 .h5/.hdf5/.hdf/.he5 等多格式；提供组/数据集/属性树浏览与多维可视化。",
+      hdf5FeatureList: [
+        "基于 h5wasm 在浏览器端解析 HDF5（数据不上传服务器，隐私安全）",
+        "支持 .h5 / .hdf5 / .hdf / .he5 等多种命名方式及 Magic Bytes 识别",
+        "层级树浏览：Group / Dataset / Attribute 完整结构",
+        "多维数据集可视化与切片预览（基于 ECharts）",
+      ],
+      hdf5BreadcrumbItemName: "HDF5 在线查看器",
+    },
+  },
   // 公共通用
   common: {
     ready: "就绪",

@@ -2,6 +2,153 @@
 import type { Messages } from "./zh";
 
 export const messages: Messages = {
+  // ===== SEO metadata translations =====
+  seo: {
+    siteName: "NCView",
+    author: "NCView Team",
+    root: {
+      titleDefault: "NCView - Scientific Data Visualization Viewer",
+      titleTemplate: "%s · NCView",
+      titleAbsolute:
+        "NCView - Scientific Data Visualization Viewer | NetCDF & HDF5 Online Parser",
+      description:
+        "Professional NetCDF and HDF5 scientific data file viewer and visualization tool. Parse multidimensional arrays and hierarchical structures instantly in the browser. Processed locally, securely, with rich chart visualization.",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "netcdfjs",
+        "HDF5",
+        "HDF5 Viewer",
+        "h5wasm",
+        ".nc viewer",
+        ".h5 viewer",
+        "scientific data visualization",
+        "multidimensional array parser",
+        "climate data",
+        "weather data",
+        "NCView",
+        "view NetCDF online",
+        "view HDF5 online",
+        "browser-side parsing",
+        "data insight",
+      ],
+      ogImageAlt: "NCView - Scientific Data Visualization Viewer",
+    },
+    home: {
+      titleDefault: "NCView - NetCDF / HDF5 Scientific Data Visualization Viewer",
+      titleAbsolute:
+        "NCView - NetCDF / HDF5 Scientific Data Visualization Viewer | Local Browser Parsing & Chart Visualization",
+      description:
+        "Free, professional online NetCDF and HDF5 viewer. Parse multidimensional scientific data and hierarchical structures instantly in your browser — 100% local processing, data never leaves your device. Browse variables, dimensions, attributes, and create rich chart visualizations.",
+      keywords: [
+        "NetCDF viewer online",
+        "HDF5 viewer online",
+        "open .nc file",
+        "open .h5 file",
+        "scientific data visualization",
+        "NetCDF visualization",
+        "HDF5 visualization",
+        "climate data viewer",
+        "multidimensional arrays",
+        "local parsing",
+      ],
+      ogImageAlt: "NCView Home - NetCDF & HDF5 Online Visualization Tool",
+      webpageName: "NCView - Scientific Data Visualization Viewer",
+      webpageHeadline:
+        "NetCDF and HDF5 browser-side scientific data visualization",
+      breadcrumbHome: "Home",
+    },
+    netcdf: {
+      titleDefault: "NetCDF Viewer - Parse Multidimensional Scientific Data Online",
+      titleAbsolute:
+        "NetCDF Online Viewer | Multidimensional Array Parser & Visualizer · NCView",
+      description:
+        "Free NetCDF online viewer. Instantly parse .nc / .netcdf / _nc files in your browser. Open safely on your device. Browse variables, dimensions, and attributes with chart visualization — no server upload required.",
+      keywords: [
+        "NetCDF",
+        "NetCDF Viewer",
+        "view NetCDF online",
+        ".nc file viewer",
+        "open .nc online",
+        "netcdfjs",
+        "climate data",
+        "weather data",
+        "ocean data",
+        "multidimensional arrays",
+        "netCDF4",
+        "NetCDF Classic",
+        "scientific data visualization",
+      ],
+      ogImageAlt: "NetCDF Online Viewer - NCView",
+    },
+    hdf5: {
+      titleDefault: "HDF5 Viewer - Browse Hierarchical Datasets Online",
+      titleAbsolute:
+        "HDF5 Online Viewer | Hierarchical Dataset Parser & Visualizer · NCView",
+      description:
+        "Free HDF5 online viewer. Uses h5wasm to parse hierarchical formats like .h5 / .hdf5 / .hdf / .he5 locally in your browser. Browse datasets, groups, attributes, and render multidimensional visualizations — files never leave your device.",
+      keywords: [
+        "HDF5",
+        "HDF5 Viewer",
+        "view HDF5 online",
+        ".h5 file viewer",
+        "open .h5 online",
+        "h5wasm",
+        "HDF5 hierarchical structure",
+        "HDF5 datasets",
+        ".he5",
+        "HDF-EOS",
+        "scientific data visualization",
+        "multidimensional arrays",
+        "Hierarchical Data Format",
+      ],
+      ogImageAlt: "HDF5 Online Viewer - NCView",
+    },
+    jsonLd: {
+      websiteAlternateName: "NCView - Scientific Data Visualization Viewer",
+      websiteSearchDescription:
+        "Professional NetCDF and HDF5 scientific data file viewer and visualization tool. Parse multidimensional arrays and hierarchical structures instantly in the browser. Processed locally, securely, with rich chart visualization.",
+      webAppAlternateName: "NCView - NetCDF / HDF5 Visualization Tool",
+      webAppSubCategory: "Scientific Data Visualization Tool",
+      webAppOperatingSystem: "Any (Web Browser)",
+      webAppBrowserRequirements:
+        "Modern browser with WebAssembly support",
+      webAppDescription:
+        "Professional NetCDF and HDF5 scientific data file viewer and visualization tool. Parse multidimensional arrays and hierarchical structures instantly in the browser. Processed locally, securely, with rich chart visualization.",
+      webAppFeatureList: [
+        "NetCDF online viewer: supports .nc / .netcdf / _nc / compressed suffixes, real content detection via Magic Bytes",
+        "HDF5 online viewer: powered by h5wasm, browse .h5 / .hdf5 / .he5 hierarchical structures",
+        "100% browser-side local parsing: data never leaves your device, fully protects research data privacy",
+        "Multidimensional chart visualization: powered by ECharts, instantly render line/heatmap/scatter/contour charts for 1D~4D scientific data",
+        "Light / Dark / Auto three theme modes with a professional, immersive research look",
+        "Tri-lingual internationalization (Chinese / English / Spanish): auto-detects browser language with manual override and persistence",
+      ],
+      // NetCDF page SoftwareApplication JSON-LD
+      netcdfSoftwareName: "NetCDF Viewer by NCView",
+      netcdfSoftwareAltName: "NetCDF Online Viewer",
+      netcdfReleaseNotes:
+        "Supports NetCDF Classic, NetCDF-64bit offset, NetCDF4/HDF5 format parsing; browse variables, dimensions, attributes, global metadata and render multidimensional chart visualizations.",
+      netcdfFeatureList: [
+        "Browser-side local parsing (data never uploaded to a server — privacy and security)",
+        "Supports .nc / .netcdf / _nc naming conventions with Magic Bytes real-format detection",
+        "Browse variables, dimensions, and both global and variable-level attribute metadata",
+        "Multidimensional array visualization (1D~4D) powered by ECharts",
+      ],
+      netcdfBreadcrumbItemName: "NetCDF Online Viewer",
+      // HDF5 page SoftwareApplication JSON-LD
+      hdf5SoftwareName: "HDF5 Viewer by NCView",
+      hdf5SoftwareAltName: "HDF5 Online Viewer",
+      hdf5ReleaseNotes:
+        "Browser-side HDF5 parsing powered by h5wasm; supports .h5/.hdf5/.hdf/.he5 formats; browse group/dataset/attribute trees and render multidimensional visualizations.",
+      hdf5FeatureList: [
+        "HDF5 parsing in the browser using h5wasm (data never uploaded to a server — privacy and security)",
+        "Supports .h5 / .hdf5 / .hdf / .he5 naming conventions with Magic Bytes real-format detection",
+        "Hierarchy tree navigation: full Group / Dataset / Attribute structure",
+        "Multidimensional dataset visualization and slice preview (powered by ECharts)",
+      ],
+      hdf5BreadcrumbItemName: "HDF5 Online Viewer",
+    },
+  },
   common: {
     ready: "Ready",
     loading: "Parsing...",
